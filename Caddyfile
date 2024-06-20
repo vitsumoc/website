@@ -20,6 +20,8 @@ redir /docs/json /docs/json/
 redir /docs/modules /docs/modules/
 rewrite /docs/json/* /docs/json/index.html
 rewrite /docs/modules/* /docs/modules/index.html
+
+rewrite /docs/zh/* /docs/zh/index.html
 rewrite /docs/* /docs/index.html
 
 redir /docs/caddyfile/directives/basicauth /docs/caddyfile/directives/basic_auth 308
