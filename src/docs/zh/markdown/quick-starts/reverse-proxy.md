@@ -65,7 +65,7 @@ reverse_proxy :9000
 
 如果向 Caddy 配置了您的主机名（或域名），Caddy 会 [自动为您提供HTTPS](/docs/automatic-https) 代理服务。如果使用 `caddy reverse-proxy` 命令时不添加 `--from` 标志，`caddy` 会自动使用 `localhost` 作为其内容，或者您也可以修改 Caddyfile 的首行，将其替换为代理服务的域名。
 
-- 当您使用 `localhost` 或是任何以 `.localhost` 结尾的域名时，Caddy 会创建一个自动更新的自签证书。当您第一次进行这个操作时，由于 Caddy 会尝试将证书安装到您服务器的 trust store，您可能需要输入密码进行授权。
+- 当您使用 `localhost` 或是任何以 `.localhost` 结尾的域名时，Caddy 会创建一个自动更新的自签证书。当您第一次进行这个操作时，由于 Caddy 会尝试将证书安装到您服务器的系统信任仓库，您可能需要输入密码进行授权。
 - 如果您使用其他的域名，Caddy 会尝试创建一个对公众可用的证书，您需要确定您的 DNS 记录正确指向这台机器，并且 80 和 443 端口开放，并由 Caddy 提供服务。
 
 如果您未指定一个端口，Caddy 将默认使用 443 端口提供 HTTPS 服务，在这种情况下可能您仍然需要提供权限（以便使用 80 和 443 端口号），在 Linux 中实现的方式有两种：

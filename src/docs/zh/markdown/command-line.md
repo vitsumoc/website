@@ -76,37 +76,37 @@ caddy <command> [<args...>]
   停止 Caddy
 
 - **[caddy storage export](#caddy-storage)**
-  Exports the contents of the configured storage to a tarball
+	将指定配置的存储内容导出为压缩包
 
 - **[caddy storage import](#caddy-storage)**
-  Imports a previously exported tarball to the configured storage
+	使用导出的压缩包导入到指定配置的存储中
 
 - **[caddy trust](#caddy-trust)**
-  Installs a certificate into local trust store(s)
+	向本地信任仓库安装根证书
 
 - **[caddy untrust](#caddy-untrust)**
-  Untrusts a certificate from local trust store(s)
+	不再信任本地信任仓库中的证书
 
 - **[caddy upgrade](#caddy-upgrade)**
-  Upgrades Caddy to the latest release
+	将 Caddy 更新到最新
 
 - **[caddy add-package](#caddy-add-package)**
-  Upgrades Caddy to the latest release, with additional plugins added
+  将 Caddy 更新到最新，并添加一些插件
 
 - **[caddy remove-package](#caddy-remove-package)**
-  Upgrades Caddy to the latest release, with some plugins removed
+	将 Caddy 更新到最新，并移除一些插件
 
 - **[caddy validate](#caddy-validate)**
-  Tests whether a config file is valid
+  验证配置文件是否可用
 
 - **[caddy version](#caddy-version)**
-  Prints the version
+  输出版本信息
 
 - **[Signals](#signals)**
-  How Caddy handles signals
+  Caddy 如何响应信号
 
 - **[Exit codes](#exit-codes)**
-  Emitted when the Caddy process exits
+  Caddy 进程退出时的返回值
 
 <h2 id="subcommands">
   子命令
@@ -481,13 +481,13 @@ Caddy 的配置重载和停止（或重启）操作无关。**不要在生产环
 
 ### `caddy storage`
 
-<i>⚠️ 实验性功能</i>
+<i>⚠️ 实验性</i>
 
-Allows export and import of the contents of Caddy's configured data storage.
+支持导入或导出 Caddy 存储中的内容。
 
-This is useful when needing to transition from one [storage module](/docs/json/storage/) to another, by exporting from your old one, updating your config, then importing into the new one.
+通过从旧的存储执行导出，再到新的存储执行导入，此指令用于在不同的 [存储模块](/docs/json/storage/) 间切换。
 
-The following command can be used to copy the storage between different modules in one shot, using old and new configs, piping the export command's output into the import command.
+下方的命令可以从旧的配置文件中读取数据，提取存储内容到 stdout，之后通过管道发送到新的配置文件中定义的存储区域。
 
 ```
 $ caddy storage export -c Caddyfile.old -o- |
@@ -496,12 +496,11 @@ $ caddy storage export -c Caddyfile.old -o- |
 
 <aside class="advice">
 
-Please note that when using [filesystem storage](/docs/conventions#data-directory), you must run the export command as the same user that Caddy normally runs as, otherwise the wrong storage location may be used.
+请注意，在使用 [文件系统存储](/docs/conventions#data-directory) 时，您必须使用和 Caddy 运行时相同的用户去进行导出操作，否则您可能会引用到错误的存储地址。
 
-For example, when running Caddy as a [systemd service](/docs/running#linux-service), it will run as the `caddy` user, so you should run the export or import commands as that user. This can typically be done with `sudo -u caddy <command>`.
+例如，当您的 Caddy [作为系统服务运行](/docs/zh/running#linux-service) 时，一般情况下他运行在 `caddy` 用户下，因此您需要在 `caddy` 用户下使用导出命令，比如：`sudo -u caddy <command>`。
 
 </aside>
-
 
 #### `caddy storage export`
 
@@ -509,11 +508,9 @@ For example, when running Caddy as a [systemd service](/docs/running#linux-servi
 	-c, --config &lt;path&gt;
 	[-o, --output &lt;path&gt;]</code></pre>
 
-`--config` is the config file load. This is required, so that the correct storage module is connected to.
+`--config` 选择加载的配置文件，必填，用以指定导出哪个存储中的内容。
 
-`--output` is the filename to write the tarball. If `-`, the output is written to stdout.
-
-
+`--output` 保存压缩包的文件名，如果值为 `-`，则输出到 stdout。
 
 #### `caddy storage import`
 
@@ -521,9 +518,9 @@ For example, when running Caddy as a [systemd service](/docs/running#linux-servi
 	-c, --config &lt;path&gt;
 	-i, --input &lt;path&gt;</code></pre>
 
-`--config` is the config file load. This is required, so that the correct storage module is connected to.
+`--config` 选择加载的配置文件，必填，用以指定导入到哪个存储中。
 
-`--input` is the filename of the tarball to read from. If `-`, the input is read from stdin.
+`--input` 需导入压缩包的文件名，如果值为 `-`，则使用 stdin 的输入。
 
 
 ### `caddy trust`
@@ -533,16 +530,15 @@ For example, when running Caddy as a [systemd service](/docs/running#linux-servi
 	[--address &lt;interface&gt;]
 	[-c, --config &lt;path&gt; [-a, --adapter &lt;name&gt;]]</code></pre>
 
-Installs a root certificate for a CA managed by Caddy's [PKI app](/docs/json/apps/pki/) into local trust stores. 
+将 Caddy 的 [PKI app](/docs/json/apps/pki/) 管理的 CA 颁布的根证书安装到本机信任仓库。
 
-Caddy will attempt to install its root certificates into the local trust stores automatically when they are first generated, but it might fail if Caddy doesn't have the appropriate permissions to write to the trust store. This command is necessary to pre-install the certificates before using them, if the server process runs as an unprivileged user (such as via systemd). You may need to run this command with `sudo` to unix systems.
+Caddy 会在生成根证书时尝试将其安装到本机信任仓库，但是如果权限不足，安装可能失败。如果您在没有权限的情况下安装运行 Caddy，导致证书没有自动安装的话，您可以使用此命令安装证书（通常加上 `sudo` 授权）。
 
-By default, this command installs the root certificate for Caddy's default CA (i.e. "local"). You may specify the ID of another CA with the `--ca` flag.
+默认情况下，此命令安装的根证书将使用 Caddy 默认的 CA（ID 为 “local”），您也可以使用 `--ca` 标志改为其他 CA。
 
-This command will attempt to connect to Caddy's [admin API](/docs/api) to fetch the root certificate, using the [`GET /pki/ca/<id>/certificates`](/docs/api#get-pkicaltidgtcertificates) endpoint. You may explicitly specify the `--address`, or use the `--config` flag to load the admin address from your config, if the running instance's admin API is not using the default listen address.
+此命令将尝试使用 Caddy 的 [管理 API](/docs/api) 中的 [`GET /pki/ca/<id>/certificates`](/docs/api#get-pkicaltidgtcertificates) 接口来获得根证书。如果您的管理 API 没有运行在默认地址，您可以通过 `--address` 显式指定地址或是通过 `--config` 指定配置文件，从而使用配置文件中的地址。
 
-You may also use the `caddy` binary with this command to install certificates on other machines in your network, if the admin API is made accessible to other machines -- be careful if doing this, to not expose the admin API to untrusted clients.
-
+您也可以让网络中的其他设备调用上述接口，获得 Caddy 颁发的根证书——小心，不要将管理 API 暴露给不受信任的设备。
 
 ### `caddy untrust`
 
@@ -552,61 +548,54 @@ You may also use the `caddy` binary with this command to install certificates on
 	[--address &lt;interface&gt;]
 	[-c, --config &lt;path&gt; [-a, --adapter &lt;name&gt;]]</code></pre>
 
-Untrusts a root certificate from the local trust store(s).
+不再信任本地信任仓库中的某个根证书。
 
-This command uninstalls trust; it does not necessarily delete the root certificate from trust stores entirely. Thus, repeatedly trusting and untrusting new certificates can fill up trust databases.
+此命令解除对某个证书的信任，而非删除证书数据。因此，反复生成证书和取消信任可能填满信任数据库。
 
-This command does not delete or modify certificate files from Caddy's configured storage.
+此命令并不会删除或改变 Caddy 配置的存储中的证书文件。
 
-This command can be used in one of two ways:
-- By specifying a direct path to the root certificate to untrust with the `--cert` flag.
-- By fetching the root certificate from the [admin API](/docs/api) using the [`GET /pki/ca/<id>/certificates`](/docs/api#get-pkicaidcertificates) endpoint. This is the default behaviour if no flags are given.
+此命令可以使用以下方式调用： 
+- 通过 `--cert` 标志指定路径，直接取消对某个根证书的信任。
+- 如果未使用标志，则通过 [管理 API](/docs/api) 中的 [`GET /pki/ca/<id>/certificates`](/docs/api#get-pkicaidcertificates) 接口获取根证书。
 
-If the admin API is used, then the CA ID defaults to "local". You may specify the ID of another CA with the `--ca` flag. You may explicitly specify the `--address`, or use the `--config` flag to load the admin address from your config, if the running instance's admin API is not using the default listen address.
-
+如果使用了管理 API，则 CA ID 默认为 “local”，您可以通过 `--ca` 标志指定其他 CA ID。如果您的管理 API 没有运行在默认地址，您可以通过 `--address` 显式指定地址或是通过 `--config` 指定配置文件，从而使用配置文件中的地址。
 
 ### `caddy upgrade`
 
-<i>⚠️ Experimental</i>
+<i>⚠️ 实验性</i>
 
 <pre><code class="cmd bash">caddy upgrade
 	[-k, --keep-backup]</code></pre>
 
-Replaces the current Caddy binary with the latest version from [our download page](/download) with the same modules installed, including all third-party plugins that are registered on the Caddy website.
+从 [下载页](/download) 获取安装最新版本的 Caddy 替换当前运行的程序，包括相同的模块选择、包括所有已经注册到 Caddy 网站的三方插件。
 
-Upgrades do not interrupt running servers; currently, the command only replaces the binary on disk. This might change in the future if we can figure out a good way to do it.
+升级动作并不会打断服务的运行，目前我们只是下载并替换硬盘中的二进制文件。在未来的某一天也许我们会使用更好的解决方案。
 
-The upgrade process is fault tolerant; the current binary is backed up first (copied beside the current one) and automatically restored if anything goes wrong. If you wish to keep the backup after the upgrade process is complete, you may use the `--keep-backup` option.
+更新失败时会自动回滚，当前的程序软件会在更新前自动备份，如果更新时发生错误则会回滚。如果您希望在更新后仍然保留更新前的版本，您可以使用 `--keep-backup` 选项。
 
-This command may require elevated privileges if your user does not have permission to write to the executable file.
-
-
+如果您的当前用户不具备对 Caddy 可执行文件的读写权限，使用此命令前您需要进行授权。
 
 ### `caddy add-package`
 
-<i>⚠️ Experimental</i>
+<i>⚠️ 实验性</i>
 
 <pre><code class="cmd bash">caddy add-package &lt;packages...&gt;
 	[-k, --keep-backup]</code></pre>
 
-Similarly to `caddy upgrade`, replaces the current Caddy binary with the latest version with the same modules installed, _plus_ the packages listed as arguments included in the new binary. Find the list of packages you can install from [our download page](/download). Each argument should be the full package name.
+与 `caddy upgrade` 相似，获取安装最新版本的 Caddy 替换当前运行的程序，同时会将参数列表中的包 _添加_ 到 Caddy 中。您可以在我们的 [下载页](/download) 找到可以安装的包，必须使用完整的包名。
 
-For example:
+例如：
 
 <pre><code class="cmd bash">caddy add-package github.com/caddy-dns/cloudflare</code></pre>
 
-
-
 ### `caddy remove-package`
 
-<i>⚠️ Experimental</i>
+<i>⚠️ 实验性</i>
 
 <pre><code class="cmd bash">caddy remove-package &lt;packages...&gt;
 	[-k, --keep-backup]</code></pre>
 
-Similarly to `caddy upgrade`, replaces the current Caddy binary with the latest version with the same modules installed, but _without_ the packages listed as arguments, if they existed in the current binary. Run `caddy list-modules --packages` to see the list of package names of non-standard modules included in the current binary.
-
-
+与 `caddy upgrade` 相似，获取安装最新版本的 Caddy 替换当前运行的程序，同时会在新的 Caddy 中 _移除_ 参数列表中的包（如果他们当前被使用了的话）。运行 `caddy list-modules --packages` 可以查看当前已安装的非基础包。
 
 ### `caddy validate`
 
@@ -615,47 +604,43 @@ Similarly to `caddy upgrade`, replaces the current Caddy binary with the latest 
 	[-a, --adapter &lt;name&gt;]
 	[--envfile &lt;file&gt;]</code></pre>
 
-Validates a configuration file, then exits. This command deserializes the config, then loads and provisions all of its modules as if to start the config, but the config is not actually started. This exposes errors in a configuration that arise during loading or provisioning phases and is a stronger error check than merely serializing a config as JSON.
+验证配置文件，随后退出。此命令会反序列化配置，随后向启动服务一样加载所有的模块，但并不会真的启动服务。此命令可以检查配置在读取和加载过程中的错误，检查程度比将配置文件转换成 JSON 格式要更加深入。
 
-`--config` is the config file to validate. If `-`, the config is read from stdin. Default is the `Caddyfile` in the current directory, if any.
+`--config` 指定被验证的配置文件，如值为 `-`，则从 stdin 接收配置文件，默认使用当前路径下的 `Caddyfile`。
 
-`--adapter` is the name of the config adapter to use, if the config file is not in Caddy's native JSON format. If the config file starts with `Caddyfile`, the `caddyfile` adapter is used by default.
+`--adapter` 指定使用的配置适配器（当配置文件不为 Caddy 的原生 JSON 格式时），如果配置文件名称以 `Caddyfile` 开头，那么默认会使用 `caddyfile` 适配器。
 
-`--envfile` loads environment variables from the specified file, in `KEY=VALUE` format. Comments starting with `#` are supported; keys may be prefixed with `export`; values may be double-quoted (double-quotes within can be escaped); multi-line values are supported.
-
-
+`--envfile` 从指定文件中加载环境变量，使用 `KEY=VALUE` 格式。支持 `#` 开头的注释，键可以有 `export` 前缀，值可以被双引号包裹，值使用双引号需要转义，支持多行值。
 
 ### `caddy version`
 <pre><code class="cmd bash">caddy version</code></pre>
 
-Prints the version and exits.
-
-
+输出版本信息并退出。
 
 ## Signals
 
-Caddy traps certain signals and ignores others. Signals can initiate specific process behavior.
+Caddy 捕获这些信号并忽略其他信号，信号可以影响进程的行为。
 
-Signal | Behavior
+信号 | 行为
 -------|----------
-`SIGINT` | Graceful exit. Send signal again to force exit immediately.
-`SIGQUIT` | Quits Caddy immediately, but still cleans up locks in storage because it is important.
-`SIGTERM` | Graceful exit.
-`SIGUSR1` | Ignored. For config updates, use the `caddy reload` command or [the API](/docs/api).
-`SIGUSR2` | Ignored.
-`SIGHUP` | Ignored.
+`SIGINT` | 正常退出，再次接收到此信号 Caddy 则会强制退出。
+`SIGQUIT` | 立刻退出 Caddy，但仍会清理存储中的锁（因为这很重要）。
+`SIGTERM` | 正常退出。
+`SIGUSR1` | 忽略，如果需要重载配置，请使用 `caddy reload` 或 [API](/docs/api)。 
+`SIGUSR2` | 忽略。
+`SIGHUP` | 忽略。
 
-A graceful exit means that new connections are no longer accepted, and existing connections will be drained before the socket is closed. A grace period may apply (and is configurable). Once the grace period is up, connections will be forcefully terminated. Locks in storage and other resources that individual modules need to release are cleaned up during a graceful shutdown.
+正常关闭意味着不再接收新的链接，现有的链接也会在一个（可配置的）宽限期内正常关闭。一旦宽限期到时，链接会被立刻强制关闭。存储中的锁和其他模块中需要释放的资源会在正常关闭期间被清理。
 
 ## Exit codes
 
-Caddy returns a code when the process exits:
+Caddy 在进程退出时的返回码：
 
-Code | Meaning
+返回码 | 含义
 -----|---------
-`0` | Normal exit.
-`1` | Failed startup. **Do not automatically restart the process; it will likely error again unless changes are made.**
-`2` | Forced quit. Caddy was forced to exit without cleaning up resources.
-`3` | Failed quit. Caddy exited with some errors during cleanup.
+`0` | 正常退出
+`1` | 启动失败。 **不要尝试自动重启，如果没有任何改变的话，自动重启的结果依然会是启动失败。**
+`2` | 强制退出，Caddy 在没有进行资源清理的情况下关闭。
+`3` | 失败退出，Caddy 在清理期间因为一些错误而退出。
 
-In bash, you can get the exit code of the last command with `echo $?`.
+在终端中，您可以通过 `echo $?` 查看上一个命令的返回码。

@@ -128,9 +128,9 @@ Caddy 进程会在 `caddy` 身份下运行，而 `caddy` 用户的 `$HOME` 被�
 
 当使用 Caddy 进行本机 HTTPS 环境的开发时，您必须使用一个 [主机名](/docs/caddyfile/concepts#addresses) 例如 `localhost` 或 `app.localhost`。这将会启用 Caddy 的本地 CA 颁发证书，参考 [本地 HTTPS](/docs/automatic-https#local-https)。
 
-由于 Caddy 是在 `caddy` 用户下运行的服务，他无权将根 CA 证书安装到 system trust store，您需要运行 [`sudo caddy trust`](/docs/command-line#caddy-trust) 来进行授权。
+由于 Caddy 是在 `caddy` 用户下运行的服务，他无权将根 CA 证书安装到系统信任仓库，您需要运行 [`sudo caddy trust`](/docs/command-line#caddy-trust) 来进行授权。
 
-如果您希望在其他设备上也使用这种 [`internal` issuer](/docs/caddyfile/directives/tls#internal) 访问 caddy，您还需要在这些设备上安装根 CA 证书。根 CA 证书位于 `/var/lib/caddy/.local/share/caddy/pki/authorities/local/root.crt`。现在很多浏览器都拥有自己的 trust store（而不再使用 system trust store），因此您可能还需要手动将证书安装到这些浏览器的 trust store。
+如果您希望在其他设备上也使用这种 [`internal` issuer](/docs/caddyfile/directives/tls#internal) 访问 caddy，您还需要在这些设备上安装根 CA 证书。根 CA 证书位于 `/var/lib/caddy/.local/share/caddy/pki/authorities/local/root.crt`。现在很多浏览器都拥有自己的信任仓库（而不再使用系统信任仓库），因此您可能还需要手动将证书安装到这些浏览器的信任仓库。
 
 ### Overrides
 
@@ -335,7 +335,7 @@ volumes:
   本地 HTTPS
 </h3>
 
-当在 Docker 下搭建本机 HTTPS 环境时，您需要一个类似于 `localhost` 或 `app.localhost` 的 [主机名](/docs/caddyfile/concepts#addresses)，这将会启用 Caddy 的本地 CA 颁发证书。这也意味着容器外部的 HTTP 客户端将不会信任 Caddy 提供的证书。为了解决这个问题，您需要将 Caddy 的根 CA 证书安装到您宿主机的 trust store：
+当在 Docker 下搭建本机 HTTPS 环境时，您需要一个类似于 `localhost` 或 `app.localhost` 的 [主机名](/docs/caddyfile/concepts#addresses)，这将会启用 Caddy 的本地 CA 颁发证书。这也意味着容器外部的 HTTP 客户端将不会信任 Caddy 提供的证书。为了解决这个问题，您需要将 Caddy 的根 CA 证书安装到您宿主机的信任仓库：
 
 <div x-data="{ os: $persist(defaultOS(['linux', 'mac', 'windows'], 'linux')) }" class="tabs">
 <div class="tab-buttons">
@@ -373,7 +373,7 @@ volumes:
 </div>
 </div>
 
-现在很多浏览器都拥有自己的 trust store（而不再使用 system trust store），因此您可能还需要手动将证书安装到这些浏览器的 trust store，依然是使用上述命令中复制的 `root.crt` 文件。
+现在很多浏览器都拥有自己的信任仓库（而不再使用系统信任仓库），因此您可能还需要手动将证书安装到这些浏览器的信任仓库，依然是使用上述命令中复制的 `root.crt` 文件。
 
 - 对于 Firefox，在 Preferences > Privacy & Security > Certificates > View Certificates > Authorities > Import 中，选择 `root.crt` 文件。
 
