@@ -21,44 +21,43 @@ title: "API"
 ---
 
 - **[POST /load](#post-load)**
-  Sets or replaces the active configuration
+  设置或替换当前配置
 
 - **[POST /stop](#post-stop)**
-  Stops the active configuration and exits the process
+  停止当前的配置并终端进程
 
 - **[GET /config/[path]](#get-configpath)**
-  Exports the config at the named path
+  导出指定路径中的配置
 
 - **[POST /config/[path]](#post-configpath)**
-  Sets or replaces object; appends to array
+	设置或替换对象，向数组添加元素
   
 - **[PUT /config/[path]](#put-configpath)**
-  Creates new object; inserts into array
+  创建新对象，向数组插入元素
 
 - **[PATCH /config/[path]](#patch-configpath)**
-  Replaces an existing object or array element
+  替换现有的对象或数组元素
 
 - **[DELETE /config/[path]](#delete-configpath)**
-  Deletes the value at the named path
+  删除指定路径中的配置
 
 - **[Using `@id` in JSON](#using-id-in-json)**
-  Easily traverse into the config structure
+  通过 id 快速定位配置
 
 - **[Concurrent config changes](#concurrent-config-changes)**
-  Avoid collisions when making unsynchronized changes to config
+  在同步修改配置时避免冲突
 
 - **[POST /adapt](#post-adapt)**
-  Adapts a configuration to JSON without running it
+  将配置适配为 JSON 但不加载
 
 - **[GET /pki/ca/&lt;id&gt;](#get-pkicaltidgt)**
-  Returns information about a particular [PKI app](/docs/json/apps/pki/) CA
+  返回指定 [PKI app](/docs/json/apps/pki/) CA 的信息
 
 - **[GET /pki/ca/&lt;id&gt;/certificates](#get-pkicaltidgtcertificates)**
-  Returns the certificate chain of a particular [PKI app](/docs/json/apps/pki/) CA
+  返回指定 [PKI app](/docs/json/apps/pki/) CA 的证书链
 
 - **[GET /reverse_proxy/upstreams](#get-reverse-proxyupstreams)**
-  Returns the current status of the configured proxy upstreams
-
+	返回当前配置反向代理上游的信息
 
 ## POST /load
 
