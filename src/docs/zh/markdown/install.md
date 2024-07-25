@@ -207,4 +207,3 @@ _提示: 这是社区维护的安装方式。_
 <pre><code class="cmd">pkg install os-caddy</code></pre>
 
 [**查看 FreeBSD caddy-custom makefile**](https://github.com/opnsense/ports/blob/master/www/caddy-custom/Makefile) 和 [**the os-caddy plugin source**](https://github.com/opnsense/plugins/tree/master/www/caddy)
-

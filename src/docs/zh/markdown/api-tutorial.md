@@ -214,4 +214,3 @@ Hello, world!</code></pre>
 <pre><code class="cmd bash">curl localhost:2019/id/msg/body</code></pre>
 
 <aside class="complete">使用 <code>@id</code> 标签</aside>
-
