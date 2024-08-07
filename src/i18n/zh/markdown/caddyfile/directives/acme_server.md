@@ -42,19 +42,21 @@ acme_server [<matcher>] {
 
 - **resolvers** 是在查找 TXT 记录以解决 ACME DNS 挑战时使用的 DNS 解析器的地址。支持使用 [网络地址](/docs/conventions#network-addresses)，默认为 UDP 53 端口。如果主机配置为 IP 地址，则直接拨号上游服务器。如果主机不是 IP 地址，则使用 Go 标准库的 [名称解析约定](https://golang.org/pkg/net/#hdr-Name_Resolution) 来解析地址。如果指定了多个解析器，会随机选择其中的一个。
 
-- **challenges** sets the enabled challenge types. If not set or the directive is used without values, then all challenge types are enabled. Accepted values are: http-01, tls-alpn-01, dns-01.
+- **challenges** 设置可用的挑战类型。如果未使用此指令或是使用此指令没有指定内容，则所有类型的挑战均可用。支持的值包括：http-01，tls-alpn-01，dns-01。
 
-- **allow_wildcard_names** enables issuing of certificates with wildcard SAN (Subject Alternative Name)
+- **allow_wildcard_names** 允许使用通配符 SAN（主题备用名称）颁发证书。
 
-- **allow**, **deny** configure the operational policy of the `acme_server`. The policy evaluation follows the criteria described by Step-CA [here](https://smallstep.com/docs/step-ca/policies/#policy-evaluation).
+- **allow**, **deny** 配置 `acme_server` 的操作策略。策略评估遵循 [此处](https://smallstep.com/docs/step-ca/policies/#policy-evaluation) Step-CA 描述的标准。
 
-	- **domains** sets the subject domain names to be allowed or denied per the policy evaluation criteria.
+	- **domains** 设置根据策略评估标准允许或拒绝的主题域名。
 
-	- **ip_ranges** sets the subject IP ranges to be allowed or denied per the policy evaluation criteria.
+	- **ip_ranges** 设置根据策略评估标准允许或拒绝的主题 IP 范围。
 
-## Examples
+<h2 id="examples">
+	示例
+</h2>
 
-To serve an ACME server with ID `home` on the domain `acme.example.com`, with the CA customized via the [`pki` global option](/docs/caddyfile/options#pki-options), and issuing its own certificate using the `internal` issuer:
+要为域名为 `acme.example.com`，ID 为 `home` 的 ACME 服务器提供服务，使用通过 [`pki` 全局选项](/docs/caddyfile/options#pki-options) 自定义的 CA，并使用 `internal` 颁发者颁发自己的证书：
 
 ```caddy
 {
@@ -77,7 +79,7 @@ acme.example.com {
 }
 ```
 
-If you have another Caddy server, it can use the above ACME server to issue its own certificates:
+如果您还有另一个 Caddy 服务器，它可以使用上面的 ACME 服务器来颁发自己的证书：
 
 ```caddy
 {
