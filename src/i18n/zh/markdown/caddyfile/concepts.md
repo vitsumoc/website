@@ -16,8 +16,8 @@ title: Caddyfile 概念
 3. [地址(addresses)](#addresses)
 4. [匹配器(matchers)](#matchers)
 5. [占位符(placeholders)](#placeholders)
-6. [配置片段(snippets)](#snippets)
-7. [命名路由(named routes)](#named-routes)
+6. [引用片段(snippets)](#snippets)
+7. [具名路由(named routes)](#named-routes)
 8. [注释(comments)](#comments)
 9. [环境变量(environment variables)](#environment-variables)
 
@@ -33,7 +33,7 @@ Caddyfile 的结构可以直观的描述：
 
 - [**全局选项**](#global-options) 应该出现在配置顶端。
 
-- [配置片段](#snippets) 或 [命名路由](#named-routes) 应该尽量集中在一起。 
+- [引用片段](#snippets) 或 [具名路由](#named-routes) 应该尽量集中在一起。 
 
 - 除此之外， Caddyfile 的首行 **通常** 是 [站点地址](#addresses)。
 
@@ -316,11 +316,13 @@ root @post       /var/www  # matcher token: @post
 
 **阅读 [匹配器文档](/docs/caddyfile/matchers) 了解更多。**
 
-## Placeholders
+<h2 id="placeholders">
+	占位符
+</h2>
 
-You can use any [Caddy placeholders](/docs/conventions#placeholders) in the Caddyfile, but for convenience you can also use some equivalent shorthand ones:
+您可以在 Caddyfile 中使用 [占位符](/docs/conventions#placeholders)，为了方便起见，您也可以使用简写：
 
-| Shorthand       | Replaces                          |
+| 简写       | 等效于                          |
 |-----------------|-----------------------------------|
 | `{cookie.*}`    | `{http.request.cookie.*}`         |
 | `{client_ip}`   | `{http.vars.client_ip}`           |
@@ -358,11 +360,11 @@ You can use any [Caddy placeholders](/docs/conventions#placeholders) in the Cadd
 | `{uri}`         | `{http.request.uri}`              |
 | `{vars.*}`      | `{http.vars.*}` |
 
+<h2 id="snippets">
+	引用片段
+</h2>
 
-
-## Snippets
-
-You can define special blocks called snippets by giving them a name surrounded in parentheses:
+您可以通过使用小括号包裹名称，来定义一个引用片段：
 
 ```caddy
 (logging) {
@@ -373,7 +375,7 @@ You can define special blocks called snippets by giving them a name surrounded i
 }
 ```
 
-And then you can reuse this anywhere you need, using the special [`import`](/docs/caddyfile/directives/import) directive:
+随后，您就可以使用 [`import`](/docs/caddyfile/directives/import) 指令在其他需要的地方复用这个片段：
 
 ```caddy
 example.com {
@@ -385,7 +387,7 @@ www.example.com {
 }
 ```
 
-The [`import`](/docs/caddyfile/directives/import) directive can also be used to include other files in its place. If the argument does not match a defined snippet, it will be tried as a file. It also supports globs to import multiple files. As a special case, it can appear anywhere within the Caddyfile (except as an argument to another directive), including outside of site blocks:
+[`import`](/docs/caddyfile/directives/import) 指令也可用于引入其他文件中的内容，当该指令的参数无法匹配任何先前定义的复用片段时，就会把参数视为一个文件，指令还支持使用星号匹配多个文件。作为一种特例，import 指令可以出现在 Caddyfile 的任何地方，无论是站点块的内部还是外部（但不能作为其他指令的实际参数）。
 
 ```caddy
 {
@@ -395,7 +397,7 @@ The [`import`](/docs/caddyfile/directives/import) directive can also be used to 
 import sites/*
 ```
 
-You can pass arguments to an imported configuration (snippets or files) and use them like so:
+您可以向配置片段或引用文件传递参数，就像这样：
 
 ```caddy
 (snippet) {
@@ -411,14 +413,16 @@ b.example.com {
 }
 ```
 
-**[Read the `import` directive page](/docs/caddyfile/directives/import) to learn more.**
+**[参考 `import` 指令](/docs/caddyfile/directives/import)了解更多。**
 
 
-## Named Routes
+<h2 id="named-routes">
+	具名路由
+</h2>
 
-⚠️ <i>Experimental</i>
+⚠️ <i>实验性</i>
 
-Named routes use syntax similar to [snippets](#snippets); they're a special block defined outside of site blocks, prefixed with `&(` and ending in `)` with the name in between.
+具名路由的语法于 [引用片段](#snippets) 相似；都是在站点块之外定义的特殊块，具名路由的定义方式是使用 `&(` 和 `)` 包裹具名路由名称。
 
 ```caddy
 &(app-proxy) {
@@ -426,7 +430,7 @@ Named routes use syntax similar to [snippets](#snippets); they're a special bloc
 }
 ```
 
-And then you can reuse this named route within any site:
+随后您就可以在任何站点中使用上述定义的具名路由：
 
 ```caddy
 example.com {
@@ -438,36 +442,36 @@ www.example.com {
 }
 ```
 
-This is particularly useful to reduce memory usage if the same route is needed in many different sites, or if multiple different matcher conditions are needed to invoke the same route.
+在多个不同的站点都需要进行相同的路由配置的时候，或是多个铍铜的匹配器条件都需要执行相同的路由的时候，具名路由功能非常实用。
 
-**[Read the `invoke` directive page](/docs/caddyfile/directives/invoke) to learn more.**
+**[参考 `invoke` 指令](/docs/caddyfile/directives/invoke)了解更多。**
 
+<h2 id="comments">
+	注释
+</h2>
 
-
-## Comments
-
-Comments start with `#` and proceed until the end of the line:
+注释从 `#` 开始，持续到行尾：
 
 ```caddy-d
 # Comments can start a line
 directive  # or go at the end
 ```
 
-The hash character `#` for a comment cannot appear in the middle of a token (i.e. it must be preceded by a space or appear at the beginning of a line). This allows the use of hashes within URIs or other values without requiring quoting.
+注释的井号字符 `#` 不能出现在词元中（即它前面必须有空格或必须出现在行首）。这个特性允许用户直接在 URI 或其他值当中直接使用 `#` 而无需使用引号。
 
+<h2 id="environment-variables">
+	环境变量
+</h2>
 
-
-## Environment variables
-
-If your configuration relies on environment variables, you can use them in the Caddyfile:
+如果您的配置依赖环境变量，您可以在 Caddyfile 中这样引用：
 
 ```caddy
 {$ENV}
 ```
 
-Environment variables in this form are substituted **before Caddyfile parsing begins**, so they can expand to empty values (i.e. `""`), partial tokens, complete tokens, or even multiple tokens and lines.
+**环境变量会在 Caddyfile 解析前完成替换**，因此他们可以是空值（例如 `""`）、次元的一部分、完整的词元、多个词元、甚至是一整行或是多行配置。
 
-For example, a environement variable `UPSTREAMS="app1:8080 app2:8080 app3:8080"` would expand to multiple [tokens](#tokens-and-quotes):
+例如，环境变量 `UPSTREAMS="app1:8080 app2:8080 app3:8080"` 就会被替换为多个 [词元](#tokens-and-quotes)：
 
 ```caddy
 example.com {
@@ -475,7 +479,7 @@ example.com {
 }
 ```
 
-A default value can be specified for when the environment variable is not found, by using `:` as the delimiter between the variable name and the default value:
+未找到环境变量时，可以使用默认值，使用 `:` 分割环境变量名称和默认值：
 
 ```caddy
 {$DOMAIN:localhost} {
@@ -483,9 +487,9 @@ A default value can be specified for when the environment variable is not found,
 }
 ```
 
-If you want to **defer the substitution** of an environment variable until runtime, you can use the [standard `{env.*}` placeholders](/docs/conventions#placeholders). Note that not all config parameters support these placeholders though, since module developers need to add a line of code to perform the replacement. If it doesn't seem to work, please file an issue to request support for it.
+如果您想要把环境变量的替换动作**推迟到运行时**，您可以使用 [标准的 `{env.*}` 占位符](/docs/conventions#placeholders)。注意并非所有的配置参数都支持这些占位符，因为模组的开发者需要添加一行代码来执行替换动作。如果占位符没法正常使用，请您提交一个 issue 来请求支持。
 
-For example, if you have the [`caddy-dns/cloudflare` plugin <img src="/old/resources/images/external-link.svg" class="external-link">](https://github.com/caddy-dns/cloudflare) installed and wish to configure the [DNS challenge](/docs/automatic-https#dns-challenge), you can pass your `CLOUDFLARE_API_TOKEN` environment variable to the plugin like this:
+例如，您正在使用 [`caddy-dns/cloudflare` plugin <img src="/old/resources/images/external-link.svg" class="external-link">](https://github.com/caddy-dns/cloudflare) 模组并想要配置 [DNS challenge](/docs/automatic-https#dns-challenge)，您可以像这样将 `CLOUDFLARE_API_TOKEN` 环境变量传入您的插件：
 
 ```caddy
 {
@@ -493,4 +497,4 @@ For example, if you have the [`caddy-dns/cloudflare` plugin <img src="/old/resou
 }
 ```
 
-If you're running Caddy as a systemd service, see [these instructions](/docs/running#overrides) for setting service overrides to define your environment variables.
+如果您将 Caddy 作为 systemd 服务运行，请参阅这些 [设置服务覆盖的说明](/docs/zh/running#overrides) 来定义您的环境变量。

@@ -36,7 +36,7 @@ title: "从源码构建"
 
 <aside class="tip">
 
-由于 [Go 中的一个 bug](https://github.com/golang/go/issues/29228)，这种安装方式并不会携带版本信息。如果您想运行 (`caddy version`) 命令，您必须将 Caddy 作为一个依赖而非主模块来编译，这部分在 Caddy 的 [main.go](https://github.com/caddyserver/caddy/blob/master/cmd/caddy/main.go) 文件中有所说明。或者，您可以使用 [`xcaddy`](#xcaddy) 解决这个问题。
+由于 [Go 中的一个 bug](https://github.com/golang/go/issues/29228)，这种安装方式并不会携带版本信息。如果您想运行 (`caddy version`) 命令，您必须将 Caddy 作为一个依赖而非主模组来编译，这部分在 Caddy 的 [main.go](https://github.com/caddyserver/caddy/blob/master/cmd/caddy/main.go) 文件中有所说明。或者，您可以使用 [`xcaddy`](#xcaddy) 解决这个问题。
 
 </aside>
 
@@ -97,7 +97,7 @@ COPY --from=builder /usr/bin/caddy /usr/bin/caddy
 
 注意第二个 `FROM` 指令，使用新的二进制文件覆盖 `caddy` 镜像，可以生成一个更小的镜像文件。
 
-这种构建方式使用 `xcaddy` 构建带有模块的 Caddy，如同 [前文描述](#xcaddy) 的那样。
+这种构建方式使用 `xcaddy` 构建带有模组的 Caddy，如同 [前文描述](#xcaddy) 的那样。
 
 要使用 Docker Compose，可以参考我们推荐的 [`compose.yml`](/docs/running#docker-compose) 和使用说明。
 

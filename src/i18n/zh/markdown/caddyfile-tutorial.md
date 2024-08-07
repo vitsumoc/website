@@ -126,7 +126,7 @@ file_server browse
 Page loaded at: {{now | date "Mon Jan 2 15:04:05 MST 2006"}}
 ```
 
-通过 Caddy 的 [模板模块](/docs/modules/http.handlers.templates)，您可以在静态文件中实现很多功能，例如包括其他 HTML，发送子请求，设置响应头，使用数据结构，等等！
+通过 Caddy 的 [模板模组](/docs/modules/http.handlers.templates)，您可以在静态文件中实现很多功能，例如包括其他 HTML，发送子请求，设置响应头，使用数据结构，等等！
 
 <aside class="complete">模板</aside>
 

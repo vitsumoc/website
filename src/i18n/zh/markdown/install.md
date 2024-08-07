@@ -18,7 +18,7 @@ title: "安装"
 
 <aside class="tip">
 
-我们的 [official packages](https://github.com/caddyserver/dist) 仅包含了基本模块，如果您需要第三方插件，[build from source with `xcaddy`](/docs/build#xcaddy) 或是访问我们的 [下载页](/download)。
+我们的 [official packages](https://github.com/caddyserver/dist) 仅包含了基本模组，如果您需要第三方插件，[build from source with `xcaddy`](/docs/build#xcaddy) 或是访问我们的 [下载页](/download)。
 
 </aside>
 
