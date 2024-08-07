@@ -155,7 +155,7 @@ Windows:
 
 <pre><code class="cmd">curl.exe https://webi.ms/caddy | powershell</code></pre>
 
-您可能需要配置 Windows 防火墙从而允许接收非本机链接。
+您可能需要配置 Windows 防火墙从而允许接收非本机连接。
 
 [**查看 Webi**](https://webinstall.dev/caddy)
 
@@ -196,7 +196,7 @@ _提示: 这是社区维护的安装方式。_
 
 <pre><code class="cmd">kraft run --rm -p 2015:2015 --plat qemu --arch x86_64 -M 256M caddy:2.7</code></pre>
 
-为了支持非本机的链接，您应该 [connect the unikernel instance to a network](https://unikraft.org/docs/cli/running#connecting-a-unikernel-instance-to-a-network)。
+为了支持非本机的连接，您应该 [connect the unikernel instance to a network](https://unikraft.org/docs/cli/running#connecting-a-unikernel-instance-to-a-network)。
 
 [**查看 Unikraft application catalog**](https://github.com/unikraft/catalog/tree/main/examples/caddy) 和 [**the KraftCloud platform examples (powered by Unikraft)**](https://github.com/kraftcloud/examples/tree/main/caddy).
 
