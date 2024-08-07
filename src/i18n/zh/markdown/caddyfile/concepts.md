@@ -192,9 +192,11 @@ heredoc 的起始标记是 `<<`，随后跟随任何文本（推荐使用大写�
 
 终止标记后跟随的词元视为指令的实参（在上文的例子中，实参是返回状态码 200）。
 
-## Global options
+<h2 id="global-options">
+	全局选项
+</h2>
 
-A Caddyfile may optionally start with a special block that has no keys, called a [global options block](/docs/caddyfile/options):
+Caddyfile 可以由一个没有键的特殊块开始，这被称为 [全局选项块](/docs/caddyfile/options)：
 
 ```caddy
 {
@@ -202,11 +204,11 @@ A Caddyfile may optionally start with a special block that has no keys, called a
 }
 ```
 
-If present, it must be the very first block in the config.
+如果使用全局选项，那么请将他放置在配置文件顶部。
 
-It is used to set options that apply globally, or not to any one site in particular. Inside, only global options can be set; you cannot use regular site directives in them.
+全局选项被用于设置全局性的，而非针对某个站的设置。在块中只能使用全局关键字，不能使用普通站点中使用的关键字。
 
-For example, to enable the `debug` global option, which is commonly used to produce verbose logs for troubleshooting:
+例如，为了开启全局 `debug` 选项（用于打印详细日志，进行故障排查）：
 
 ```caddy
 {
@@ -214,51 +216,50 @@ For example, to enable the `debug` global option, which is commonly used to prod
 }
 ```
 
-**[Read the Global Options page](/docs/caddyfile/options) to learn more.**
+**查看 [全局选项](/docs/caddyfile/options) 了解更多。**
 
+<h2 id="addresses">
+	地址
+</h2>
 
+地址是站点块的键，而且大部分情况下是 Caddyfile 的首行内容。
 
-## Addresses
-
-An address always appears at the top of the site block, and is usually the first thing in the Caddyfile.
-
-These are examples of valid addresses:
+这些是合法地址的示例：
 
 | Address              | Effect                            |
 |----------------------|-----------------------------------|
-| `example.com`        | HTTPS with managed [publicly-trusted certificate](/docs/automatic-https#hostname-requirements) |
-| `*.example.com`      | HTTPS with managed [wildcard publicly-trusted certificate](/docs/caddyfile/patterns#wildcard-certificates) |
-| `localhost`          | HTTPS with managed [locally-trusted certificate](/docs/automatic-https#local-https) |
-| `http://`            | HTTP catch-all, affected by [`http_port`](/docs/caddyfile/options#http-port) |
-| `https://`           | HTTPS catch-all, affected by [`https_port`](/docs/caddyfile/options#http-port) |
-| `http://example.com` | HTTP explicitly, with a `Host` matcher |
-| `example.com:443`    | HTTPS due to matching the [`https_port`](/docs/caddyfile/options#http-port) default |
-| `:443`               | HTTPS catch-all due to matching the [`https_port`](/docs/caddyfile/options#http-port) default |
-| `:8080`              | HTTP on non-standard port, no `Host` matcher |
-| `localhost:8080`     | HTTPS on non-standard port, due to having a valid domain |
-| `https://example.com:443` | HTTPS, but both `https://` and `:443` are redundant |
-| `127.0.0.1` | HTTPS, with a locally-trusted IP certificate |
-| `http://127.0.0.1` | HTTP, with an IP address `Host` matcher (rejects `localhost`) |
-
+| `example.com`        | 基于 [公共信任证书](/docs/automatic-https#hostname-requirements) 的 HTTPS |
+| `*.example.com`      | 基于 [公共信任通配符证书](/docs/caddyfile/patterns#wildcard-certificates) 的 HTTPS |
+| `localhost`          | 基于 [本地信任证书](/docs/automatic-https#local-https) 的 HTTPS |
+| `http://`            | HTTP 通配，端口使用 [`http_port`](/docs/caddyfile/options#http-port) |
+| `https://`           | HTTPS 通配，端口使用 [`https_port`](/docs/caddyfile/options#http-port) |
+| `http://example.com` | 使用 `Host` 显示指定 HTTP |
+| `example.com:443`    | 由于端口号等于 [`https_port`](/docs/caddyfile/options#http-port) 默认值，使用 HTTPS |
+| `:443`               | 由于端口号等于 [`https_port`](/docs/caddyfile/options#http-port) 默认值，HTTPS 通配 |
+| `:8080`              | 没有 `Host`，启动非默认端口的 HTTP |
+| `localhost:8080`     | 由于有域名，启动非默认端口的 HTTPS |
+| `https://example.com:443` | HTTPS，但 `https://` 和 `:443` 都不是必须的 |
+| `127.0.0.1` | 基于本地信任 IP 证书的 HTTPS |
+| `http://127.0.0.1` | HTTP，将 IP 地址作为 `Host`（不可用 `localhost` 访问） |
 
 <aside class="tip">
 
-[Automatic HTTPS](/docs/automatic-https) is enabled if your site's address contains a hostname or IP address. This behavior is purely implicit, however, so it never overrides any explicit configuration.
+当您的站点地址包含主机名或 IP 地址时，[自动 HTTPS](/docs/automatic-https) 会被默认开启，此行为是完全隐式的，当然，可以被显式的配置覆盖。
 
-For example, if the site's address is `http://example.com`, auto-HTTPS will not activate because the scheme is explicitly `http://`.
+例如，如果站点地址为 `http://example.com`，则自动 HTTPS 不会生效，因为显示指定了 `http://` 协议。
 
 </aside>
 
+Caddy 会通过您的地址推断您站点的协议、域名和端口。如果地址中没有指定端口，Caddy 会在配置中寻找对应该协议的端口，或者使用默认端口 443。
 
-From the address, Caddy can potentially infer the scheme, host and port of your site. If the address is without a port, the Caddyfile will choose the port matching the scheme if specified, or the default port of 443 will be assumed.
+如果您制定了域名，那么仅有携带匹配该域名 `Host` 头的请求才会被处理。换句话说，如果站点地址是 `localhost`，那么 Caddy 并不会处理访问 `127.0.0.1` 的请求。
 
-If you specify a hostname, only requests with a matching `Host` header will be honored. In other words, if the site address is `localhost`, then Caddy will not match requests to `127.0.0.1`.
+您可以使用通配符(`*`)，但记住他只能用来表示域名中的一个标签。例如，`*.example.com` 可以匹配 `foo.example.com` 但不能匹配 
+`foo.bar.example.com`，`*` 可以匹配 `localhost` 但不能匹配 `example.com`。查阅 [通配符认证模板](/docs/caddyfile/patterns#wildcard-certificates) 了解实例。
 
-Wildcards (`*`) may be used, but only to represent precisely one label of the hostname. For example, `*.example.com` matches `foo.example.com` but not `foo.bar.example.com`, and `*` matches `localhost` but not `example.com`. See the [wildcard certificates pattern](/docs/caddyfile/patterns#wildcard-certificates) for a practical example.
+省略域名或 IP 地址，可以用来匹配所有地址，例如 `https://`。这在 [按需 TLS](/docs/automatic-https#on-demand-tls) 的情况下很有用，您也不知道随后会使用什么域名访问。
 
-To catch all hosts, omit the host portion of the address, for example, simply `https://`. This is useful when using [On-Demand TLS](/docs/automatic-https#on-demand-tls), when you don't know the domains ahead of time.
-
-If multiple sites share the same definition, you can list all of them together, either with spaces or commas. The following three examples are equivalent:
+如果多个站点共享相同的定义，您可以将他们列举在一起，使用空格或逗号分隔。下方的三个例子是完全等价的：
 
 ```caddy
 # Comma separated site addresses
@@ -267,16 +268,12 @@ localhost:8080, example.com, www.example.com {
 }
 ```
 
-or
-
 ```caddy
 # Space separated site addresses
 localhost:8080 example.com www.example.com {
 	...
 }
 ```
-
-or
 
 ```caddy
 # Comma and new-line separated site addresses
@@ -287,9 +284,9 @@ www.example.com {
 }
 ```
 
-An address must be unique; you cannot specify the same address more than once.
+地址必须是唯一的，您不能将同一地址配置两次。
 
-[Placeholders](#placeholders) **cannot** be used in addresses, but you may use Caddyfile-style [environment variables](#environment-variables) in them:
+[占位符](#placeholders) **不能**用于地址，但您可以使用 Caddyfile 风格的环境变量 [环境变量](#environment-variables)：
 
 ```caddy
 {$DOMAIN:localhost} {
@@ -297,17 +294,17 @@ An address must be unique; you cannot specify the same address more than once.
 }
 ```
 
-By default, sites bind on all network interfaces. If you wish to override this, use the [`bind` directive](/docs/caddyfile/directives/bind) or the [`default_bind` global option](/docs/caddyfile/options#default-bind) to do so.
+默认情况下，站点将会绑定到所有的网络接口。如果您向覆盖此配置，请使用 [`bind` 指令](/docs/caddyfile/directives/bind) 或 [`default_bind` 全局选项](/docs/caddyfile/options#default-bind)。
 
+<h2 id="matchers">
+	匹配器
+</h2>
 
+默认情况下，[指令](#directives) 会对所有的请求生效。
 
-## Matchers
+[请求匹配器](/docs/caddyfile/matchers) 可用于按给定标准对请求进行分类。使用匹配器，您可以准确指定某个指令适用于哪些请求。
 
-HTTP handler [directives](#directives) apply to all requests by default (unless otherwise documented).
-
-[Request matchers](/docs/caddyfile/matchers) can be used to classify requests by a given criteria. With matchers, you can specify exactly which requests a certain directive applies to.
-
-For directives that support matchers, the first argument after the directive is the **matcher token**. Here are some examples:
+对于适用匹配器的指令，指令的第一个实参就是 **匹配词元**。下面是一些例子：
 
 ```caddy-d
 root *           /var/www  # matcher token: *
@@ -315,12 +312,9 @@ root /index.html /var/www  # matcher token: /index.html
 root @post       /var/www  # matcher token: @post
 ```
 
-Matcher tokens can be omitted entirely to match all requests; for example, `*` does not need to be given if the next argument does not look like a path matcher.
+不指定匹配词元意味着适配所有请求，比如，如果后续的实参看起来并不是路径匹配器的话，则可以省略 `*` 实参。
 
-**[Read the Request Matchers page](/docs/caddyfile/matchers) to learn more.**
-
-
-
+**阅读 [匹配器文档](/docs/caddyfile/matchers) 了解更多。**
 
 ## Placeholders
 
