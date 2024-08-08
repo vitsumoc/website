@@ -4,20 +4,21 @@ title: basic_auth (Caddyfile directive)
 
 # basic_auth
 
-Enables HTTP Basic Authentication, which can be used to protect directories and files with a username and hashed password.
+启用 HTTP 基本身份验证，可通过用户名和密码保护目录和文件。
 
-**Note that basic auth is not secure over plain HTTP.** Use discretion when deciding what to protect with HTTP Basic Authentication.
+**请注意，普通 HTTP + 基本身份验证的组合并不安全。** 请谨慎决定使用 HTTP 基本身份验证保护哪些内容。
 
-When a user requests a resource that is protected, the browser will prompt the user for a username and password if they have not already supplied one. If the proper credentials are present in the Authorization header, the server will grant access to the resource. If the header is missing or the credentials are incorrect, the server will respond with HTTP 401 Unauthorized.
+当用户请求受保护的资源时，如果用户尚未提供用户名和密码，浏览器将提示用户输入用户名和密码。如果 Authorization 头中存在正确的凭据，服务器将授予对资源的访问权限。如果没有 Authorization 头或凭据不正确，服务器将响应 HTTP 401 Unauthorized。
 
-Caddy configuration does not accept plaintext passwords; you MUST hash them before putting them into the configuration. The [`caddy hash-password`](/docs/command-line#caddy-hash-password) command can help with this.
+Caddy 配置不接受明文密码，您 **必须** 在配置前先对密码进行哈希。您可以使用 [`caddy hash-password`](/docs/command-line#caddy-hash-password) 命令完成这一操作。
 
-After a successful authentication, the `{http.auth.user.id}` placeholder will be available, which contains the authenticated username.
+认证成功后，`{http.auth.user.id}` 将变得可用，其中包含着用户的 username。
 
-Prior to v2.8.0, this directive was named `basicauth`, but was renamed for consistency with other directives.
+在 v2.8.0 版本之前，这条指令的名称是 `basicauth`，但是为了指令命名的一致性，现在改为了 `basic_auth`。
 
-
-## Syntax
+<h2 id="syntax">
+	语法
+</h2>
 
 ```caddy-d
 basic_auth [<matcher>] [<hash_algorithm> [<realm>]] {
@@ -26,18 +27,19 @@ basic_auth [<matcher>] [<hash_algorithm> [<realm>]] {
 }
 ```
 
-- **&lt;hash_algorithm&gt;** is the name of the password hashing algorithm (or KDF) used for the hashes in this configuration. Default: `bcrypt`
+- **&lt;hash_algorithm&gt;** 此配置中密码使用的哈希（或 KDF） 算法的名称，默认为：`bcrypt`
 
-- **&lt;realm&gt;** is a custom realm name.
+- **&lt;realm&gt;** 自定义域名。
 
-- **&lt;username&gt;** is a username or user ID.
+- **&lt;username&gt;** 用户名或用户 ID。
 
-- **&lt;hashed_password&gt;** is the password hash.
+- **&lt;hashed_password&gt;** 密码的哈希值。
 
+<h2 id="examples">
+	示例
+</h2>
 
-## Examples
-
-Require authentication for all requests to `example.com`:
+对访问 `example.com` 的所有请求进行身份验证：
 
 ```caddy
 example.com {
@@ -49,7 +51,7 @@ example.com {
 }
 ```
 
-Protect files in `/secret/` so only `Bob` can access them (and anyone can see other paths):
+保护 `/secret/` 中的文件，只有 Bob 可以访问（其他路径公开）：
 
 ```caddy
 example.com {

@@ -45,7 +45,7 @@ title: Caddyfile 指令
 ----------|------------
 **[abort](/docs/zh/caddyfile/directives/abort)** | 中止 HTTP 请求
 **[acme_server](/docs/zh/caddyfile/directives/acme_server)** | 嵌入式 ACME 服务器
-**[basic_auth](/docs/caddyfile/directives/basic_auth)** | Enforces HTTP Basic Authentication
+**[basic_auth](/docs/zh/caddyfile/directives/basic_auth)** | 启动 HTTP 基本身份验证
 **[bind](/docs/caddyfile/directives/bind)** | Customize the server's socket address
 **[encode](/docs/caddyfile/directives/encode)** | Encodes (usually compresses) responses
 **[error](/docs/caddyfile/directives/error)** | Trigger an error
