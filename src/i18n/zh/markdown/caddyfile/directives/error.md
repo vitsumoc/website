@@ -4,12 +4,13 @@ title: error (Caddyfile directive)
 
 # error
 
-Triggers an error in the HTTP handler chain, with an optional message and recommended HTTP status code. 
+在 HTTP 处理程序链中触发错误，并带有可选消息和推荐的 HTTP 状态代码。
 
-This handler does not write a response. Instead, it's meant to be paired with the [`handle_errors`](handle_errors) directive to invoke your custom error handling logic.
+该处理不会进行响应，而是应该与 [`handle_errors`](handle_errors) 指令配对来调用您的自定义错误处理逻辑。
 
-
-## Syntax
+<h2 id="syntax">
+	语法
+</h2>
 
 ```caddy-d
 error [<matcher>] <status>|<message> [<status>] {
@@ -17,26 +18,27 @@ error [<matcher>] <status>|<message> [<status>] {
 }
 ```
 
-- **&lt;status&gt;** is the HTTP status code to write. Default is `500`.
-- **&lt;message&gt;** is the error message. Default is no error message.
-- **message** is an alternate way to provide an error message; convenient if it is multiple lines.
+- **&lt;status&gt;** HTTP 状态码，默认 `500`。
+- **&lt;message&gt;** 错误消息，默认没有消息。
+- **message** 另外一种写错误消息的方式，可以用来处理多行文本。
 
-To clarify, the first non-matcher argument can be either a 3-digit status code, or an error message string. If it is an error message, the next argument can be the status code.
+更清晰的描述是这样的，第一个非匹配器参数可以是 3 位数字的状态码，也可以是错误消息字符串，如果是错误消息字符串的话，那么后面的参数就应该是状态码。
 
+<h2 id="examples">
+	示例
+</h2>
 
-## Examples
-
-Trigger an error on certain request paths, and use [`handle_errors`](handle_errors) to write a response:
+在某些请求路径上触发错误，并使用 [`handle_errors`](handle_errors) 写入响应：
 
 ```caddy
 example.com {
 	root * /srv
 
-	# Trigger errors for certain paths
+	# 在特定路径上触发错误
     error /private* "Unauthorized" 403
 	error /hidden* "Not found" 404
 
-    # Handle the error by serving an HTML page 
+    # 捕捉错误并返回 HTML 页面 
     handle_errors {
         rewrite * /{err.status_code}.html
 		file_server

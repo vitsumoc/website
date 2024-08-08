@@ -48,7 +48,7 @@ title: Caddyfile 指令
 **[basic_auth](/docs/zh/caddyfile/directives/basic_auth)** | 启动 HTTP 基本身份验证
 **[bind](/docs/zh/caddyfile/directives/bind)** | 自定义服务的 socket 地址
 **[encode](/docs/zh/caddyfile/directives/encode)** | 编码（通常是压缩）响应
-**[error](/docs/caddyfile/directives/error)** | Trigger an error
+**[error](/docs/zh/caddyfile/directives/error)** | 触发 error
 **[file_server](/docs/caddyfile/directives/file_server)** | Serve files from disk
 **[forward_auth](/docs/caddyfile/directives/forward_auth)** | Delegate authentication to an external service
 **[fs](/docs/caddyfile/directives/fs)** | Set the file system to use for file I/O
