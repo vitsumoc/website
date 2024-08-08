@@ -46,8 +46,8 @@ title: Caddyfile 指令
 **[abort](/docs/zh/caddyfile/directives/abort)** | 中止 HTTP 请求
 **[acme_server](/docs/zh/caddyfile/directives/acme_server)** | 嵌入式 ACME 服务器
 **[basic_auth](/docs/zh/caddyfile/directives/basic_auth)** | 启动 HTTP 基本身份验证
-**[bind](/docs/caddyfile/directives/bind)** | Customize the server's socket address
-**[encode](/docs/caddyfile/directives/encode)** | Encodes (usually compresses) responses
+**[bind](/docs/zh/caddyfile/directives/bind)** | 自定义服务的 socket 地址
+**[encode](/docs/zh/caddyfile/directives/encode)** | 编码（通常是压缩）响应
 **[error](/docs/caddyfile/directives/error)** | Trigger an error
 **[file_server](/docs/caddyfile/directives/file_server)** | Serve files from disk
 **[forward_auth](/docs/caddyfile/directives/forward_auth)** | Delegate authentication to an external service

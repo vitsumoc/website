@@ -11,21 +11,23 @@ window.$(function() {
 
 # encode
 
-Encodes responses using the configured encoding(s). A typical use for encoding is compression.
+使用配置的方式编码响应，典型的用法是压缩响应。
 
-## Syntax
+<h2 id="syntax">
+	语法
+</h2>
 
 ```caddy-d
 encode [<matcher>] <formats...> {
-	# encoding formats
+	# 编码格式
 	gzip [<level>]
 	zstd
 	
 	minimum_length <length>
 
-	# response matcher single line syntax
+	# 单行编码匹配器
 	match [header <field> [<value>]] | [status <code...>]
-	# or response matcher block for multiple conditions
+	# 或多种匹配条件的匹配块
 	match {
 		status <code...>
 		header <field> [<value>]
@@ -33,15 +35,15 @@ encode [<matcher>] <formats...> {
 }
 ```
 
-- **&lt;formats...&gt;** is the list of encoding formats to enable. If multiple encodings are enabled, the encoding is chosen based the request's Accept-Encoding header; if the client has no strong preference (q-factor), then the first supported encoding is used.
+- **&lt;formats...&gt;** 启用的编码格式列表。如果同时启用了多种编码格式，则基于请求中的 Accept-Encoding 头内容来选用编码格式；如果客户端没有偏好（q-factor），则使用第一个支持的编码方式。
 
-- **gzip** <span id="gzip"/> enables Gzip compression, optionally at the specified level.
+- **gzip** <span id="gzip"/> 启用 Gzip 压缩，可选压缩等级。
 
-- **zstd** <span id="zstd"/> enables Zstandard compression.
+- **zstd** <span id="zstd"/> 启用 Zstandard 压缩。
 
-- **minimum_length** <span id="minimum_length"/> the minimum number of bytes a response should have to be encoded (default: 512).
+- **minimum_length** <span id="minimum_length"/> 需要压缩的响应的最小长度（默认值：512）。
 
-- **match** <span id="match"/> is a [response matcher](#response-matcher). Only matching responses are encoded. The default looks like this:
+- **match** <span id="match"/> 是一个 [响应匹配器](#response-matcher)。只有被匹配的响应才会被编码，匹配器的默认值如下：
 
   ```caddy-d
   match {
@@ -81,11 +83,11 @@ encode [<matcher>] <formats...> {
   }
   ```
 
+<h2 id="response-matcher">
+	响应匹配器
+</h2>
 
-## Response matcher
-
-**Response matchers** can be used to filter (or classify) responses by specific criteria.
-
+**响应匹配器** 可以按照一定的标准来过滤（或分类）响应。
 
 ### status
 
@@ -93,31 +95,31 @@ encode [<matcher>] <formats...> {
 status <code...>
 ```
 
-By HTTP status code.
+按照 HTTP 状态码匹配。
 
-- **&lt;code...&gt;** is a list of HTTP status codes. Special cases are `2xx`, `3xx`, ... which match against all status codes in the range of 200-299, 300-399, ... respectively
-
+- **&lt;code...&gt;** HTTP 状态码列表。支持 `2xx`，`3xx`... 这样的格式，可以用来进行 200-299，300-399...这样的范围匹配。
 
 ### header
 
-See the [header](/docs/caddyfile/matchers#header) request matcher for the supported syntax.
+参考请求匹配器中的 [header](/docs/caddyfile/matchers#header) 语法。
 
+<h2 id="examples">
+	示例
+</h2>
 
-## Examples
-
-Enable Gzip compression:
+启用 Gzip 压缩：
 
 ```caddy-d
 encode gzip
 ```
 
-Enable Zstandard and Gzip compression (with Zstandard implicitly preferred, since it is first):
+启用 Zstandard 和 Gzip 压缩（Zstandard 优先，因为他配置在前面）：
 
 ```caddy-d
 encode zstd gzip
 ```
 
-And in a full site, compressing static files served by [`file_server`](file_server):
+对 [`file_server`](file_server) 启动的文件站点全站启用压缩：
 
 ```caddy
 example.com {

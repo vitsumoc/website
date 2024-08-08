@@ -4,27 +4,29 @@ title: bind (Caddyfile directive)
 
 # bind
 
-Overrides the interface to which the server's socket should bind.
+覆盖服务器 socket 应绑定的接口。
 
-Normally, the listener binds to the empty (wildcard) interface. However, you may force the listener to bind to another hostname or IP instead. This directive accepts only a host, not a port. The port is determined by the [site address](/docs/caddyfile/concepts#addresses) (defaulting to `443`).
+通常来说，监听器绑定在空（通配符）接口。然而，您也可以指定监听绑定到某个主机名或 IP 地址。本指令只接收主机名，不接收端口，端口由 [站点地址](/docs/caddyfile/concepts#addresses) 决定（默认值为 `443`）。
 
-Note that binding sites inconsistently may result in unintended consequences. For example, if two sites on the same port resolve to `127.0.0.1` and only one of those sites is configured with `bind 127.0.0.1`, then only one site will be accessible since the other will bind to the port without a specific host; the OS will choose the more specific matching socket. (Virtual hosts are not shared across different listeners.)
+请注意，将站点绑定在不同的接口上可能会导致意料之外的后果。例如，有两个都期望向 `127.0.0.1` 服务并具有相同端口的站点，其中一个配置了 `bind 127.0.0.1`，另一个则会无法访问，因为另一个站点将绑定到没有特定主机名的端口。操作系统将根据情况选择一个更加具体的接口。（虚拟主机名并不会在不同的监听器之间共享。）
 
-`bind` accepts [network addresses](/docs/conventions#network-addresses), but may not include a port.
+`bind` 接受 [网络地址](/docs/conventions#network-addresses) 参数，但不可携带端口。
 
-
-## Syntax
+<h2 id="syntax">
+	语法
+</h2>
 
 ```caddy-d
 bind <hosts...>
 ```
 
-- **&lt;hosts...&gt;** is the list of host interfaces to bind which to bind the listener. 
+- **&lt;hosts...&gt;** 要绑定的主机接口列表，用于绑定侦听器。
 
+<h2 id="examples">
+	示例
+</h2>
 
-## Examples
-
-To make a socket accessible only on the current machine, bind to the loopback interface (localhost):
+使 socket 只能在当前计算机上访问，绑定到环回接口（localhost）：
 
 ```caddy
 example.com {
@@ -32,7 +34,7 @@ example.com {
 }
 ```
 
-To include IPv6:
+包括 IPv6：
 
 ```caddy
 example.com {
@@ -40,7 +42,7 @@ example.com {
 }
 ```
 
-To bind to `10.0.0.1:8080`:
+绑定到 `10.0.0.1:8080`：
 
 ```caddy
 example.com:8080 {
@@ -48,7 +50,7 @@ example.com:8080 {
 }
 ```
 
-To bind to a Unix domain socket at `/run/caddy`:
+绑定到 Unix domain socket `/run/caddy`：
 
 ```caddy
 example.com {
@@ -56,7 +58,7 @@ example.com {
 }
 ```
 
-To change the file permission to be writable by all users ([defaults](/docs/conventions#network-addresses) to `0200`, which is only writable by the owner):
+修改文件权限，使所有人都可以写入（[默认](/docs/conventions#network-addresses) 情况下是 `0200`，意味着只有文件持有者可以写入）：
 
 ```caddy
 example.com {
@@ -64,7 +66,7 @@ example.com {
 }
 ```
 
-To bind one domain to two different interfaces, with different responses:
+将一个域名绑定到两个接口，并使用不同的响应：
 
 ```caddy
 example.com {
