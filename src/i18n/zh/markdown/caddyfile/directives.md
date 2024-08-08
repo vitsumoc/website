@@ -49,7 +49,7 @@ title: Caddyfile 指令
 **[bind](/docs/zh/caddyfile/directives/bind)** | 自定义服务的 socket 地址
 **[encode](/docs/zh/caddyfile/directives/encode)** | 编码（通常是压缩）响应
 **[error](/docs/zh/caddyfile/directives/error)** | 触发 error
-**[file_server](/docs/caddyfile/directives/file_server)** | Serve files from disk
+**[file_server](/docs/zh/caddyfile/directives/file_server)** | 文件服务器
 **[forward_auth](/docs/caddyfile/directives/forward_auth)** | Delegate authentication to an external service
 **[fs](/docs/caddyfile/directives/fs)** | Set the file system to use for file I/O
 **[handle](/docs/caddyfile/directives/handle)** | A mutually-exclusive group of directives

@@ -194,7 +194,7 @@ adapt: validation: loading app modules: module name 'tls': provision tls: loadin
 
 开箱即用文件服务器。
 
-`--root` 指定文件服务器根路径，默认为当前的运行路径。
+`--root` 指定文件服务器根目录，默认为当前的运行路径。
 
 `--listen` 指定监听端口，默认为 `:80`，当使用了 `--domain` 时则默认端口为 `:443`。
 
