@@ -27,26 +27,27 @@ window.$(function() {
 
 # forward_auth
 
-An opinionated directive which proxies a clone of the request to an authentication gateway, which can decide whether handling should continue, or needs to be sent to a login page.
+一个自用的指令，将请求复制到鉴权网关，鉴权网关可以决定继续处理，或是需要发送登录页。
 
-- [Syntax](#syntax)
-- [Expanded Form](#expanded-form)
-- [Examples](#examples)
+- [语法](#syntax)
+- [展开形式](#expanded-form)
+- [示例](#examples)
   - [Authelia](#authelia)
   - [Tailscale](#tailscale)
 
-Caddy's [`reverse_proxy`](/docs/caddyfile/directives/reverse_proxy) is capable of performing "pre-check requests" to an external service, but this directive is tailored specifically for the authentication usecase. This directive is actually just a convenient way to use a longer, more common configuration (below).
+Caddy 的 [`reverse_proxy`](/docs/caddyfile/directives/reverse_proxy) 能够支持使用外部服务进行“请求预校验”，但本指令是专门针对需要身份认证的场景而定制的。本指令实际上只是一种更长、更通用配置（见下）的简化形式。
 
-This directive makes a `GET` request to the configured upstream with the `uri` rewritten:
-- If the upstream responds with a `2xx` status code, then access is granted and the header fields in `copy_headers` are copied to the original request, and handling continues.
-- Otherwise, if the upstream responds with any other status code, then the upstream's response is copied back to the client. This response should typically involve a redirect to login page of the authentication gateway.
+本指令可以重写 `uri`，并向配置的上游发送 `GET` 请求：
+- 如果上游提供了 `2xx` 状态码的响应，则表示授权接入，并且会将 `copy_headers` 中的头部复制到请求中，随后继续处理。
+- 或者，如果上游提供了其他的响应码，则将上游的响应复制并返回给客户端。这种响应通常会重定向到身份鉴权网关的登陆页面。
 
-If this behaviour is not exactly what you want, you may take the [expanded form](#expanded-form) below as a basis and customize it to your needs.
+如果这种行为并不是您预期的，您可以以下方的 [展开形式](#expanded-form) 作为基础来自定义您需要的行为。
 
-All the subdirectives of [`reverse_proxy`](/docs/caddyfile/directives/reverse_proxy) are supported, and passed through to the underlying `reverse_proxy` handler.
+[`reverse_proxy`](/docs/caddyfile/directives/reverse_proxy) 中所有的子指令都支持使用，并且会在处理中传递到实际上的底层 `reverse_proxy` 处理器。
 
-
-## Syntax
+<h2 id="syntax">
+	语法
+</h2>
 
 ```caddy-d
 forward_auth [<matcher>] [<upstreams...>] {
@@ -57,45 +58,43 @@ forward_auth [<matcher>] [<upstreams...>] {
 }
 ```
 
-- **&lt;upstreams...&gt;** is a list of upstreams (backends) to which to send auth requests.
+- **&lt;upstreams...&gt;** 上游认证服务列表。
 
-- **uri** is the URI (path and query) to set on the request sent to the upstream. This will usually be the verification endpoint of the authentication gateway.
+- **uri** 发送给上游认证服务的 URI，一般是鉴权网关的认证接口。
 
-- **copy_headers** is a list of HTTP header fields to copy from the response to the original request, when the request has a success status code.
+- **copy_headers** 当认证请求成功时，会将成功响应中的，符合此处配置的头部复制到原始请求中。
 
-  The field can be renamed by using `>` followed by the new name, for example `Before>After`.
+	头可以使用 `>` 来更名，例如 `Before>After`。
 
-  A block may be used to list all the fields, one per line, if you prefer for readability.
+	您可以使用块来列举所有的头部，或者每行一个，随您的喜好。
 
-Since this directive is an opinionated wrapper over a reverse proxy, you can use any of [`reverse_proxy`](/docs/caddyfile/directives/reverse_proxy#syntax)'s subdirectives to customize it.
+由于本指令是 [`reverse_proxy`](/docs/caddyfile/directives/reverse_proxy#syntax) 的一个自定义包装，您可以使用 `reverse_proxy` 中所有的可用的子指令来定制化此指令。
 
+<h2 id="expanded-form">
+	展开形式
+</h2>
 
-## Expanded form
-
-The `forward_auth` directive is the same as the following configuration. Auth gateways like [Authelia](https://www.authelia.com/) work well with this preset. If yours does not, feel free to borrow from this and customize it as needed instead of using the `forward_auth` shortcut.
+`forward_auth` 指令和下方的配置相同。[Authelia](https://www.authelia.com/) 鉴权网关在此配置下可以正常工作。如果您使用的并非此网关，您也可以在这个基础上修改自己需要的认证配置，而不一定非要使用 `forward_auth` 这种快捷方式。
 
 ```caddy-d
 reverse_proxy <upstreams...> {
-	# Always GET, so that the incoming
-	# request's body is not consumed
+	# 总是改成 GET，这样原始请求的 body 就不会被消耗
 	method GET
 
-	# Change the URI to the auth gateway's
-	# verification endpoint
+	# 把 URI 改写为鉴权网关的认证接口
 	rewrite <to>
 
-	# Forward the original method and URI,
-	# since they get rewritten above; this
-	# is in addition to other X-Forwarded-*
-	# headers already set by reverse_proxy
+	# 原始请求的 URI 和方法已经被重写
+	# 此处转发原始请求的 URI 和方法
+	# 这是对 reverse_proxy 已经设置的其他 X-Forwarded-* 头的补充
 	header_up X-Forwarded-Method {method}
 	header_up X-Forwarded-Uri {uri}
 
-	# On a successful response, copy response headers
+	# 对于成功的响应，复制响应头
 	@good status 2xx
 	handle_response @good {
 		request_header {
-			# for example, for each copy_headers field...
+			# 例如，copy_headers 中的每个字段
 			Remote-User {rp.header.Remote-User}
 			Remote-Email {rp.header.Remote-Email}
 		}
@@ -103,21 +102,21 @@ reverse_proxy <upstreams...> {
 }
 ```
 
-
-## Examples
-
+<h2 id="examples">
+	示例
+</h2>
 
 ### Authelia
 
-Delegating authentication to [Authelia](https://www.authelia.com/), before serving your app via a reverse proxy:
+通过反向代理，在您的应用服务前使用 [Authelia](https://www.authelia.com/) 进行鉴权：
 
 ```caddy
-# Serve the authentication gateway itself
+# 为鉴权网关本身提供服务
 auth.example.com {
 	reverse_proxy authelia:9091
 }
 
-# Serve your app
+# APP 服务
 app1.example.com {
 	forward_auth authelia:9091 {
 		uri /api/verify?rd=https://auth.example.com
@@ -128,12 +127,11 @@ app1.example.com {
 }
 ```
 
-For more information, see [Authelia's documentation](https://www.authelia.com/integration/proxies/caddy/) for integrating with Caddy.
-
+有关更多信息，请参阅 [Authelia 与 Caddy 集成的文档](https://www.authelia.com/integration/proxies/caddy/)。
 
 ### Tailscale
 
-Delegating authentication to [Tailscale](https://tailscale.com/) (currently named [`nginx-auth`](https://tailscale.com/blog/tailscale-auth-nginx/), but it still works with Caddy), and using the alternative syntax for `copy_headers` to *rename* the copied headers (note the `>` in each header):
+使用 [Tailscale](https://tailscale.com/) 鉴权（当前名为 [`nginx-auth`](https://tailscale.com/blog/tailscale-auth-nginx/)，当然 Caddy 都可以支持），并使用 `copy_headers` 中的替换语法来 *重命名* 被复制的 HTTP 头（注意每个头配置中的 `>`）：
 
 ```caddy-d
 forward_auth unix//run/tailscale.nginx-auth.sock {

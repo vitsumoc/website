@@ -50,7 +50,7 @@ title: Caddyfile 指令
 **[encode](/docs/zh/caddyfile/directives/encode)** | 编码（通常是压缩）响应
 **[error](/docs/zh/caddyfile/directives/error)** | 触发 error
 **[file_server](/docs/zh/caddyfile/directives/file_server)** | 文件服务器
-**[forward_auth](/docs/caddyfile/directives/forward_auth)** | Delegate authentication to an external service
+**[forward_auth](/docs/zh/caddyfile/directives/forward_auth)** | 将身份验证委托给外部服务
 **[fs](/docs/caddyfile/directives/fs)** | Set the file system to use for file I/O
 **[handle](/docs/caddyfile/directives/handle)** | A mutually-exclusive group of directives
 **[handle_errors](/docs/caddyfile/directives/handle_errors)** | Defines routes for handling errors
