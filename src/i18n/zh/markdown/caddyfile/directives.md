@@ -51,7 +51,7 @@ title: Caddyfile 指令
 **[error](/docs/zh/caddyfile/directives/error)** | 触发 error
 **[file_server](/docs/zh/caddyfile/directives/file_server)** | 文件服务器
 **[forward_auth](/docs/zh/caddyfile/directives/forward_auth)** | 将身份验证委托给外部服务
-**[fs](/docs/caddyfile/directives/fs)** | Set the file system to use for file I/O
+**[fs](/docs/zh/caddyfile/directives/fs)** | 选择文件系统
 **[handle](/docs/caddyfile/directives/handle)** | A mutually-exclusive group of directives
 **[handle_errors](/docs/caddyfile/directives/handle_errors)** | Defines routes for handling errors
 **[handle_path](/docs/caddyfile/directives/handle_path)** | Like handle, but strips path prefix

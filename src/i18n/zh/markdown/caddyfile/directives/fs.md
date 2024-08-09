@@ -4,24 +4,27 @@ title: fs (Caddyfile directive)
 
 # fs
 
-Sets which file system should be used for performing file I/O.
+选择文件读写时使用的文件系统。
 
-This could let you connect to a remote filesystem running in the cloud, or a database with a file-like interface, or even to read from files embedded within the Caddy binary.
+您可以连接到云端的远程文件系统，或是实现了文件系统接口的数据库，甚至是读取嵌入到 Caddy 程序内部的文件。
 
-First, you must declare a file system name using the [`filesystem` global option](/docs/caddyfile/options#filesystem), then you can use this directive to specify which file system to use.
+首先，您必须使用 [`filesystem` 全局选项](/docs/caddyfile/options#filesystem) 来声明带有名称的文件系统，随后您就可以使用本指令来选择使用哪个文件系统。
 
-This directive is often used in conjunction with the [`file_server` directive](file_server) to serve static files, or the [`try_files` directive](try_files) to perform rewrites based on the existence of files. Typically also used with [`root` directive](root) to set the root path within the file system.
+本指令通常与 [`filesystem` global option](/docs/caddyfile/options#filesystem) 共同使用，以提供静态文件，或是与 [`try_files` directive](try_files) 结合使用，根据文件存在的与否进行重写。通常还与 [`root` 指令](root) 一起使用来设置文件系统内的根路径。
 
-
-## Syntax
+<h2 id="syntax">
+	语法
+</h2>
 
 ```caddy-d
 fs [<matcher>] <filesystem>
 ```
 
-## Examples
+<h2 id="examples">
+	示例
+</h2>
 
-Using an file system named `foo`, using an imaginary module named `custom` which might require authentication:
+使用名为 `foo` 的文件系统，假设有一个名为 `custom` 的模组并且需要认证：
 
 ```caddy
 {
@@ -37,7 +40,7 @@ example.com {
 }
 ```
 
-To only serve images from the `foo` file system, and the rest from the default file system:
+只使用 `foo` 中的镜像，其他内容来自默认文件系统：
 
 ```caddy
 example.com {
