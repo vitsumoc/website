@@ -6,7 +6,7 @@ title: handle (Caddyfile directive)
 
 一组与其他同级 `handle` 块互斥的指令。
 
-换句话说，当有多个 `handle` 指令顺序出现时，只有第一个 _匹配到_ 的 `handle` 块会执行。一个没有匹配器的 handle 可以被视为 _fallback_ 路由（可以匹配一切条件）。
+换句话说，当有多个 `handle` 指令顺序出现时，只有第一个 _匹配到_ 的 `handle` 块会执行。一个没有匹配器的 handle 可以被视为 _退路_ 路由（最后的选择，可以匹配一切）。
 
 `handle` 指令按照他们匹配器的 [指令排序算法](/docs/caddyfile/directives#sorting-algorithm) 顺序执行。[`handle_path`](handle_path) 是与 `handle` 有共同排序优先级的一种特殊指令，只是对路径的配置不同。
 
@@ -85,7 +85,7 @@ example.com {
 	}
 
 	handle {
-		# 此块匹配所有其余内容（fallback）
+		# 此块匹配所有其余内容（退路）
 	}
 }
 ```

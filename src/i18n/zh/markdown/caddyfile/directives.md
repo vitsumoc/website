@@ -53,7 +53,7 @@ title: Caddyfile 指令
 **[forward_auth](/docs/zh/caddyfile/directives/forward_auth)** | 将身份验证委托给外部服务
 **[fs](/docs/zh/caddyfile/directives/fs)** | 选择文件系统
 **[handle](/docs/zh/caddyfile/directives/handle)** | 一组独立执行的指令
-**[handle_errors](/docs/caddyfile/directives/handle_errors)** | Defines routes for handling errors
+**[handle_errors](/docs/zh/caddyfile/directives/handle_errors)** | 定义处理错误的路由
 **[handle_path](/docs/caddyfile/directives/handle_path)** | Like handle, but strips path prefix
 **[header](/docs/caddyfile/directives/header)** | Sets or removes response headers
 **[import](/docs/caddyfile/directives/import)** | Include snippets or files
