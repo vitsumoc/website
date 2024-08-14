@@ -4,30 +4,33 @@ title: invoke (Caddyfile directive)
 
 # invoke
 
-<i>⚠️ Experimental</i>
+<i>⚠️ 实验性</i>
 
-Invokes a [named route](/docs/caddyfile/concepts#named-routes).
+调用 [具名路由](/docs/caddyfile/concepts#named-routes)。
 
-This is useful when paired with HTTP handler directives that have their own in-memory state, or if they are expensive to provision on load. If you have hundreds of sites or more, invoking a named route can help reduce memory usage.
+在一些 HTTP 处理过程指令都拥有自己的内存状态，或是他们的加载成本很高的情况下，此指令非常有效。例如您拥有超过一百个站点，此此时调用具名路由将会减少内存开销。
 
 <aside class="tip">
 	
-Unlike [`import`](/docs/caddyfile/directives/import), `invoke` does not support arguments, but you may use [`vars`](/docs/caddyfile/directives/vars) to define variables that can be used within the named route.
+与 [`import`](/docs/caddyfile/directives/import) 不同，`invoke` 不支持参数，但您仍然可以使用 [`vars`](/docs/caddyfile/directives/vars) 定义具名路由中使用的变量。
 
 </aside>
 
-## Syntax
+<h2 id="syntax">
+	语法
+</h2>
 
 ```caddy-d
 invoke [<matcher>] <route-name>
 ```
 
-- **&lt;route-name&gt;** is the name of the previously defined route that should be invoked. If the route is not found, then an error will be triggered.
+- **&lt;route-name&gt;** 先前定义的，需要被调用的路由。如果路由未找到到，则会报错。
 
+<h2 id="examples">
+	示例
+</h2>
 
-## Examples
-
-Defines a [named route](/docs/caddyfile/concepts#named-routes) with a [`reverse_proxy`](/docs/caddyfile/directives/reverse_proxy) which can be reused in multiple sites, with the same in-memory load balancing state reused for every site.
+定义一个带有 [`reverse_proxy`](/docs/caddyfile/directives/reverse_proxy) 的 [具名路由](/docs/caddyfile/concepts#named-routes)，可以在多个站点间复用，在每个站点间复用同一个内存中的负载均衡状态。
 
 ```caddy
 &(app-proxy) {
@@ -38,8 +41,8 @@ Defines a [named route](/docs/caddyfile/concepts#named-routes) with a [`reverse_
 	}
 }
 
-# Apex domain allows accessing the app via an /app subpath
-# and the main site otherwise.
+# 可以通过 /app 子路径访问应用
+# 其他情况则访问主站
 example.com {
 	handle_path /app* {
 		invoke app-proxy
@@ -51,7 +54,7 @@ example.com {
 	}
 }
 
-# The app is also accessible via a subdomain.
+# 使用子域名直接访问应用
 app.example.com {
 	invoke app-proxy
 }

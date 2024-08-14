@@ -57,7 +57,7 @@ title: Caddyfile 指令
 **[handle_path](/docs/zh/caddyfile/directives/handle_path)** | 与 handle 相似，但会删除路径前缀
 **[header](/docs/zh/caddyfile/directives/header)** | 设置或移除响应头
 **[import](/docs/zh/caddyfile/directives/import)** | 引入引用片段或文件
-**[invoke](/docs/caddyfile/directives/invoke)** | Invoke a named route
+**[invoke](/docs/zh/caddyfile/directives/invoke)** | 调用具名路由
 **[log](/docs/caddyfile/directives/log)** | Enables access/request logging
 **[log_append](/docs/caddyfile/directives/log_append)** | Append a field to the access log
 **[log_skip](/docs/caddyfile/directives/log_skip)** | Skip access logging for matched requests
