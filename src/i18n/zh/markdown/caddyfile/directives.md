@@ -54,8 +54,8 @@ title: Caddyfile 指令
 **[fs](/docs/zh/caddyfile/directives/fs)** | 选择文件系统
 **[handle](/docs/zh/caddyfile/directives/handle)** | 一组独立执行的指令
 **[handle_errors](/docs/zh/caddyfile/directives/handle_errors)** | 定义处理错误的路由
-**[handle_path](/docs/caddyfile/directives/handle_path)** | Like handle, but strips path prefix
-**[header](/docs/caddyfile/directives/header)** | Sets or removes response headers
+**[handle_path](/docs/zh/caddyfile/directives/handle_path)** | 与 handle 相似，但会删除路径前缀
+**[header](/docs/zh/caddyfile/directives/header)** | 设置或移除响应头
 **[import](/docs/caddyfile/directives/import)** | Include snippets or files
 **[invoke](/docs/caddyfile/directives/invoke)** | Invoke a named route
 **[log](/docs/caddyfile/directives/log)** | Enables access/request logging

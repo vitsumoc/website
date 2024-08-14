@@ -20,12 +20,13 @@ window.$(function() {
 
 # handle_path
 
-Works the same as the [`handle` directive](handle), but implicitly uses [`uri strip_prefix`](uri) to strip the matched path prefix.
+与 [`handle`](handle) 指令相同，但会显示的删除 [`uri strip_prefix`](uri) 匹配的路径前缀。
 
-Handling a request matching a certain path (while stripping that path from the request URI) is a common enough use case that it has its own directive for convenience.
+处理与特定路径匹配的请求（同时从请求 URI 中剥离该路径）是一个足够常见的用例，为了方便起见，他有自己的指令。
 
-
-## Syntax
+<h2 id="syntax">
+	语法
+</h2>
 
 ```caddy-d
 handle_path <path_matcher> {
@@ -33,13 +34,15 @@ handle_path <path_matcher> {
 }
 ```
 
-- **<directives...>** is a list of HTTP handler directives or directive blocks, one per line, just like would be used outside of a `handle_path` block.
+- **<directives...>** Http 处理指令列表，每行一个，使用方式和在 `handle_path` 块外面时相同。
 
-Only a single [path matcher](/docs/caddyfile/matchers#path-matchers) is accepted, and is required; you cannot use named matchers with `handle_path`.
+必须配置唯一的一个 [path matcher](/docs/caddyfile/matchers#path-matchers)，您不能在 `handle_path` 中使用命名匹配器。
 
-## Examples
+<h2 id="examples">
+	示例
+</h2>
 
-This configuration:
+此配置：
 
 ```caddy-d
 handle_path /prefix/* {
@@ -47,7 +50,7 @@ handle_path /prefix/* {
 }
 ```
 
-👆 is effectively the same as this 👇, but the `handle_path` form 👆 is slightly more succinct
+👆 和下方配置等效 👇，但上方的 `handle_path` 👆 更加简洁
 
 ```caddy-d
 handle /prefix/* {
@@ -56,16 +59,16 @@ handle /prefix/* {
 }
 ```
 
-A full Caddyfile example, where `handle_path` and `handle` are mutually exclusive; but, be aware of the [subfolder problem <img src="/old/resources/images/external-link.svg" class="external-link">](https://caddy.community/t/the-subfolder-problem-or-why-cant-i-reverse-proxy-my-app-into-a-subfolder/8575)
+完整的 Caddyfile 示例，其中的 `handle_path` 和 `handle` 不会同时进入；但需要小心 [subfolder problem <img src="/old/resources/images/external-link.svg" class="external-link">](https://caddy.community/t/the-subfolder-problem-or-why-cant-i-reverse-proxy-my-app-into-a-subfolder/8575)
 
 ```caddy
 example.com {
-	# Serve your API, stripping the /api prefix
+	# API 服务，去除 /api 前缀
 	handle_path /api/* {
 		reverse_proxy localhost:9000
 	}
 
-	# Serve your static site
+	# 静态站点服务
 	handle {
 		root * /srv
 		file_server

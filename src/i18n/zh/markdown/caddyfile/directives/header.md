@@ -4,47 +4,48 @@ title: header (Caddyfile directive)
 
 # header
 
-Manipulates HTTP response header fields. It can set, add, and delete header values, or perform replacements using regular expressions.
+操作 HTTP 响应头，可以进行设置、添加或删除，或使用正则表达式替换。
 
-By default, header operations are performed immediately unless any of the headers are being deleted (`-` prefix) or setting a default value (`?` prefix). In those cases, the header operations are automatically deferred until the time they are being written to the client.
+默认情况下，和头相关的操作会立刻执行；但如果有删除（`-` 前缀）或是设置默认值（`?` 前缀），则和头相关的操作会自动延迟（deffer）到需要写入到客户端的时刻执行。
 
-To manipulate HTTP request headers, you may use the [`request_header`](request_header) directive.
+如果需要操作 HTTP 请求头，您可以使用 [`request_header`](request_header) 指令。
 
-
-## Syntax
+<h2 id="syntax">
+	语法
+</h2>
 
 ```caddy-d
 header [<matcher>] [[+|-|?|>]<field> [<value>|<find>] [<replace>]] {
-	# Add
+	# 添加
 	+<field> <value>
 
-	# Set
+	# 设置
 	<field> <value>
 
-	# Set with defer
+	# 设置并 defer
 	><field> <value>
 
-	# Delete
+	# 删除
 	-<field>
 
-	# Replace
+	# 替换
 	<field> <find> <replace>
 
-	# Replace with defer
+	# 替换并 defer
 	><field> <find> <replace>
 
-	# Default
+	# 默认
 	?<field> <value>
 
 	[defer]
 }
 ```
 
-- **&lt;field&gt;** is the name of the header field.
+- **&lt;field&gt;** 是头的字段名称。
 
-  With no prefix, the field is set (overwritten).
+	不使用前缀时，表示设置（覆盖）该字段。
 
-  Prefix with `+` to add the field instead of overwriting (setting) the field if it already exists; header fields can appear more than once in a request.
+	使用 `+` 前缀表示在字段存在时，添加而非覆盖（设置）该字段；响应头中的同名字段可以重复出现多次。
 
   Prefix with `-` to delete the field. The field may use prefix or suffix `*` wildcards to delete all matching fields.
 
