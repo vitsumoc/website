@@ -47,46 +47,47 @@ header [<matcher>] [[+|-|?|>]<field> [<value>|<find>] [<replace>]] {
 
 	使用 `+` 前缀表示在字段存在时，添加而非覆盖（设置）该字段；响应头中的同名字段可以重复出现多次。
 
-  Prefix with `-` to delete the field. The field may use prefix or suffix `*` wildcards to delete all matching fields.
+	使用 `-` 前缀表示删除该字段，可以使用前缀或 `*` 通配符删除所有匹配的字段。
 
-  Prefix with `?` to set a default value for the field. The field is only written if it doesn't yet exist.
+	使用 `?` 前缀表示为字段设置默认值，只有当字段本身不存在时才会进行设置。
 
-  Prefix with `>` to set the field, and enable `defer`, as a shortcut.
+	使用 `>` 前缀表示设置字段，并启用 `defer`，这是一个快捷方式。
 
-- **&lt;value&gt;** is the header field value, when adding or setting a field.
+- **&lt;value&gt;**  当添加或设置字段是，表示字段的值。
 
-- **&lt;find&gt;** is the substring or regular expression to search for.
+- **&lt;find&gt;** 用于搜索的子字符串或正则表达式。
 
-- **&lt;replace&gt;** is the replacement value; required if performing a search-and-replace.
+- **&lt;replace&gt;** 在进行搜索和替换操作时使用的替换值。
 
-- **defer** will force the header operations to be deferred until the response is being written out to the client. This is automatically enabled if any of the header fields are being deleted with `-`, when setting a default value with `?`, or when having used the `>` prefix.
+- **defer** 会强制将头操作延迟到向客户端写入响应时执行。如果有任何字段被删除 `-`、设置默认值 `?` 或是带有 `>` 前缀，则此子指令默认被添加。
 
-For multiple header manipulations, you can open a block and specify one manipulation per line in the same way.
+对于多个头部操作，您可以打开一个块，在其中逐行配置需要的操作。
 
-When using the `?` prefix to set a default header value, it is automatically separated into its own `header` handler, if it was in a `header` block with multiple header operations. [Under the hood](/docs/modules/http.handlers.headers#response/require), using `?` configures a response matcher which applies to the directive's entire handler, which only applies the header operations (like `defer`), but only if the field is not yet set.
+当使用 `?` 前缀设置头的默认值时，如果他和其他的头部操作共同处在同一个 `header` 块中，那么他实际上会转入自己独立的 `header` 处理过程。[Under the hood](/docs/modules/http.handlers.headers#response/require)，使用 `?` 配置的响应匹配器会应用到一整个指令处理过程。这只会在匹配的字段不存在时生效，也只会应用到和头部相关的操作（例如 `defer`）。
 
+<h2 id="examples">
+	示例
+</h2>
 
-## Examples
-
-Set a custom header field on all requests:
+对所有的响应都设置自定义头：
 
 ```caddy-d
 header Custom-Header "My value"
 ```
 
-Strip the "Hidden" header field:
+删除 "Hidden" 头：
 
 ```caddy-d
 header -Hidden
 ```
 
-Replace `http://` with `https://` in any Location header:
+在 Location 头中将 `http://` 替换为 `https://`：
 
 ```caddy-d
 header Location http:// https://
 ```
 
-Set security and privacy headers on all pages: (**WARNING:** only use if you understand the implications!)
+对所有页面设置安全和隐私头：（**警告：** 您必须理解这些配置造成的影响！）
 
 ```caddy-d
 header {
@@ -104,7 +105,7 @@ header {
 }
 ```
 
-Multiple header directives that are intended to be mutually-exclusive:
+被配置为互斥的两个 header 指令：
 
 ```caddy-d
 route {
@@ -113,21 +114,21 @@ route {
 }
 ```
 
-Set a default cache expiration if upstream doesn't define one:
+如果上游没有定义，则添加一个默认的缓存超时时间：
 
 ```caddy-d
 header ?Cache-Control "max-age=3600"
 reverse_proxy upstream:443
 ```
 
-To override the cache expiration that a proxy upstream had set for paths starting with `/no-cache`; enabling `defer` is necessary to ensure the header is set _after_ the proxy writes its headers:
+即使上游已经进行了设置，仍然覆盖 `/no-cache` 路径下的缓存过期配置；启用 `defer` 用来确保响应头的覆盖操作是在上游写入头部 _之后_ 进行：
 
 ```caddy-d
 header /no-cache* >Cache-Control nocache
 reverse_proxy upstream:443
 ```
 
-To perform a deferred update of a `Set-Cookie` header to add `SameSite=None`; a regexp capture is used to grab the existing value, and `$1` re-inserts it at the start with the additional option appended:
+执行一个 deffered 的设置，在 `Set-Cookie` 头的尾部添加 `SameSite=None`；使用正则表达式抓取现有的值，随后的 `$1` 重新插入值，并添加我们需要的内容：
 
 ```caddy-d
 header >Set-Cookie (.*) "$1; SameSite=None;"

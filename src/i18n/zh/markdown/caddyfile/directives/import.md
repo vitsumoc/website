@@ -4,46 +4,50 @@ title: import (Caddyfile directive)
 
 # import
 
-Includes a [snippet](/docs/caddyfile/concepts#snippets) or file, replacing this directive with the contents of the snippet or file.
+引入 [引用片段](/docs/caddyfile/concepts#snippets) 或是文件，将此指令替换为代码片段或是文件的内容。
 
-This directive is a special case: it is evaluated before the structure is parsed, and it can appear anywhere in the Caddyfile.
+此指令是一个特例：他会在结构解析前执行，并且可以出现在 Caddyfile 中的任何地方。
 
-## Syntax
+<h2 id="syntax">
+	语法
+</h2>
 
 ```caddy-d
 import <pattern> [<args...>]
 ```
 
-- **&lt;pattern&gt;** is the filename, glob pattern, or name of [snippet](/docs/caddyfile/concepts#snippets) to include. Its contents will replace this line as if that file's contents appeared here to begin with.
+- **&lt;pattern&gt;** 是将要被引入的文件名称、匹配模板（glob pattern）、或是 [引用片段](/docs/caddyfile/concepts#snippets)。其中的内容将会替代此行的内容，就像是那些内容一开始就出现在这里一样。
 
-  It is an error if a specific file cannot be found, but an empty glob pattern is not an error.
+  如果指定的文件不存在则会报错，但匹配模板为空并不会报错。
 
-  If importing a specific file, a warning will be emitted if the file is empty.
+  当引入指定文件，并且文件内容为空时，会产生警告。
 
-  If the pattern is a filename or glob, it is always relative to the file the `import` appears in.
+  如果 pattern 是文件名或是匹配模板，则此处使用使用 `import` 指令所在文件的相对路径。
 
-  If using a glob pattern `*` as the final path segment, hidden files (i.e. files starting with a `.`) are ignored. To import hidden files, use `.*` as the final segment.
-- **&lt;args...&gt;** is an optional list of arguments to pass to the imported tokens. This placeholder is a special case and is evaluated at Caddyfile-parse-time, not at run-time. They can be used in various forms, similarly to [Go's slice syntax](https://gobyexample.com/slices):
-  - `{args[n]}` where `n` is the 0-based positional index of the parameter
-  - `{args[:]}` where all the arguments are inserted
-  - `{args[:m]}` where the arguments before `m` are inserted
-  - `{args[n:]}` where the arguments beginning with `n` are inserted
-  - `{args[n:m]}` where the arguments in the range between `n` and `m` are inserted
+  如果使用匹配模板 `*` 作为路径的最后一部分，则会忽略隐藏的文件（例如，以 `.` 作为名称开始的文件），如果需要引入隐藏文件，请使用 `.*` 作为路径的最后一部分。
 
-  For the forms that insert many tokens, the placeholder **must** be a [token](/docs/caddyfile/concepts#tokens-and-quotes) on its own, it cannot be part of another token. In other words, it must have spaces around it, and cannot be in quotes.
+- **&lt;args...&gt;** 是一个可选的实际参数列表，其中的内容会被传递给导入的词元。这些占位符也是一种特例，他们会在 Caddyfile 解析时执行而非运行时。他们有多种使用方式，和 [Go 切片](https://gobyexample.com/slices) 类似：
+  - `{args[n]}` 以 0 为起始，获得第 `n` 个参数
+  - `{args[:]}` 所有的参数
+  - `{args[:m]}` `m` 之前的所有参数
+  - `{args[n:]}` 从 `n` 开始的所有参数
+  - `{args[n:m]}` 在 `n` 和 `m` 之间的所有参数
 
-  Note that prior to v2.7.0, the syntax was `{args.N}` but this form was deprecated in favor of the more flexible syntax above.
+  对于插入多个词元的情况，占位符（例如上述的 `{args[:]}`）**必须** 是一个独立的 [词元](/docs/caddyfile/concepts#tokens-and-quotes)，不能作为其他词元的一部分。换句话说，他必须左右都是空格，而且不能被引号包裹。
 
+  请注意，在 v2.7.0 之前，语法为 `{args.N}` 但这种形式已被弃用，取而代之的是上面更灵活的语法。
 
-## Examples
+<h2 id="examples">
+	示例
+</h2>
 
-Import all files in an adjacent sites-enabled folder (except hidden files):
+引入 sites-enabled 文件夹中所有的文件（隐藏文件除外）：
 
 ```caddy-d
 import sites-enabled/*
 ```
 
-Import a snippet that sets CORS headers using an import argument:
+引入引用片段，使用参数设置 CORS 头：
 
 ```caddy
 (cors) {
@@ -57,7 +61,7 @@ example.com {
 }
 ```
 
-Import a snippet which takes a list of proxy upstreams as arguments:
+引入引用片段，将一组上游服务代理作为参数传入：
 
 ```caddy
 (https-proxy) {
@@ -73,7 +77,7 @@ example.com {
 }
 ```
 
-Import a snippet which creates a proxy with a prefix rewrite rule as the first argument:
+引入引用片段，创建以第一个参数为重写规则前缀的反向代理：
 
 ```caddy
 (proxy-rewrite) {
