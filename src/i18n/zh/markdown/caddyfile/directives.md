@@ -58,7 +58,7 @@ title: Caddyfile 指令
 **[header](/docs/zh/caddyfile/directives/header)** | 设置或移除响应头
 **[import](/docs/zh/caddyfile/directives/import)** | 引入引用片段或文件
 **[invoke](/docs/zh/caddyfile/directives/invoke)** | 调用具名路由
-**[log](/docs/caddyfile/directives/log)** | Enables access/request logging
+**[log](/docs/zh/caddyfile/directives/log)** | 开启 接入/请求 日志
 **[log_append](/docs/caddyfile/directives/log_append)** | Append a field to the access log
 **[log_skip](/docs/caddyfile/directives/log_skip)** | Skip access logging for matched requests
 **[map](/docs/caddyfile/directives/map)** | Maps an input value to one or more outputs
