@@ -21,7 +21,7 @@ window.$(function() {
 encode [<matcher>] <formats...> {
 	# 编码格式
 	gzip [<level>]
-	zstd
+	zstd [<level>]
 	
 	minimum_length <length>
 
@@ -39,7 +39,7 @@ encode [<matcher>] <formats...> {
 
 - **gzip** <span id="gzip"/> 启用 Gzip 压缩，可选压缩等级。
 
-- **zstd** <span id="zstd"/> 启用 Zstandard 压缩。
+- **zstd** <span id="zstd"/> 启用 Zstandard 压缩，可选压缩等级（可选值为：default，fastest，better，best）。默认压缩级别大致等同于默认的 Zstandard 模式（level 3）。
 
 - **minimum_length** <span id="minimum_length"/> 需要压缩的响应的最小长度（默认值：512）。
 

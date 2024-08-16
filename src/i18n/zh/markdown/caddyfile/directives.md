@@ -59,8 +59,8 @@ title: Caddyfile 指令
 **[import](/docs/zh/caddyfile/directives/import)** | 引入引用片段或文件
 **[invoke](/docs/zh/caddyfile/directives/invoke)** | 调用具名路由
 **[log](/docs/zh/caddyfile/directives/log)** | 开启 接入/请求 日志
-**[log_append](/docs/caddyfile/directives/log_append)** | Append a field to the access log
-**[log_skip](/docs/caddyfile/directives/log_skip)** | Skip access logging for matched requests
+**[log_append](/docs/zh/caddyfile/directives/log_append)** | 在接入日志后追加字段
+**[log_skip](/docs/zh/caddyfile/directives/log_skip)** | 跳过匹配到请求的接入日志
 **[map](/docs/caddyfile/directives/map)** | Maps an input value to one or more outputs
 **[method](/docs/caddyfile/directives/method)** | Change the HTTP method internally
 **[metrics](/docs/caddyfile/directives/metrics)** | Configures the Prometheus metrics exposition endpoint

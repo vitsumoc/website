@@ -4,23 +4,25 @@ title: log_skip (Caddyfile directive)
 
 # log_skip
 
-Skips access logging for matched requests.
+跳过匹配到请求的接入日志。
 
-This should be used alongside the [`log` directive](log) to skip logging requests that are not relevant for your needs.
+此指令应与 [`log`](log) 指令一起使用，以跳过与您的需求不相关的日志记录请求。
 
-Prior to v2.8.0, this directive was named `skip_log`, but was renamed for consistency with other directives.
+在 v2.8.0 之前，此指令被命名为 `skip_log`，但为了与其他指令保持一致，已重命名。
 
-
-## Syntax
+<h2 id="syntax">
+	语法
+</h2>
 
 ```caddy-d
 log_skip [<matcher>]
 ```
 
+<h2 id="examples">
+	示例
+</h2>
 
-## Examples
-
-Skip access logging for static files stored in a subpath:
+跳过存储在子路径中的静态文件的接入日志：
 
 ```caddy
 example.com {
@@ -33,16 +35,14 @@ example.com {
 }
 ```
 
-
-Skip access logging for requests matching a pattern; in this case, for files with particular extensions:
+跳过与模式匹配的请求的接入日志；此案例中，匹配具有特定扩展名的文件：
 
 ```caddy-d
 @skip path_regexp \.(js|css|png|jpe?g|gif|ico|woff|otf|ttf|eot|svg|txt|pdf|docx?|xlsx?)$
 log_skip @skip
 ```
 
-
-The matcher is not needed if it's found within a route which is already within a matcher. For example with a handle for a file server for a particular subpath:
+如果指令在路由块中，且已经进行了匹配，则不需要再在指令中使用匹配器。例如，本例匹配某个特定子路径下的静态文件服务器：
 
 ```caddy-d
 handle_path /static* {
