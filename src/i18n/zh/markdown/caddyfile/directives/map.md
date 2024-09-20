@@ -8,7 +8,7 @@ title: map (Caddyfile directive)
 
 此指令将 source 值与输入侧进行比较，如果匹配成功，则将输出值应用于每个 destination。Destinations 部分都是占位符名称。还可以为每个 destination 指定默认输出值。
 
-如未被使用，被映射的占位符不会参与计算，因此即使映射表很大，此指令依然保持高效。
+在被使用前，被映射的占位符不会参与计算，因此即使映射表很大，此指令依然保持高效。
 
 <h2 id="syntax">
 	语法
@@ -43,7 +43,7 @@ map [<matcher>] <source> <destinations...> {
 	示例
 </h2>
 
-The following example demonstrates most aspects of this directive:
+下方示例展示了此指令的多种用途：
 
 ```caddy-d
 map {host}                {my_placeholder}  {magic_number} {
@@ -58,10 +58,10 @@ map {host}                {my_placeholder}  {magic_number} {
 }
 ```
 
-This directive switches on the value of `{host}`, i.e. the domain name of the request.
+改指令切换请求中的域名，即 `{host}` 的值。
 
-- If the request is for `example.com`, set `{my_placeholder}` to `some value`, and `{magic_number}` to `3`.
-- Else, if the request is for `foo.example.com`, set `{my_placeholder}` to `another value`, and let `{magic_number}` default to `42`.
-- Else, if the request is for any subdomain of `example.com`, set `{my_placeholder}` to a string containing the value of the first regexp capture group, i.e the entire subdomain, and set `{magic_number}` to 5.
-- Else, if the request is for any host that ends in `.net` or `.xyz`, set only `{magic_number}` to `7` or `15`, respectively. Leave `{my_placeholder}` unset.
-- Else (for all other hosts), the default values will apply: `{my_placeholder}` will be set to `unknown domain` and `{magic_number}` will be set to `42`.
+- 如果请求中的值为 `example.com`，则将 `{my_placeholder}` 设置为 `some value`，并将 `{magic_number}` 设置为 `3`。
+- 此外，如果请求中的值为 `foo.example.com`，则将 `{my_placeholder}` 设置为 `another value`，而 `{magic_number}` 保持默认值 42。
+- 此外，如果请求为 `example.com` 的任意子域名，则将 `{my_placeholder}` 设置成包含第一个正则表达式捕获组的字符串，例如 entire subdomain，然后将 `{magic_number}` 置为 5。
+- 此外，如果请求中的 host 以 `.net` 或 `.xyz` 结尾，则将 `{magic_number}` 设置为 7 或 15，保持 `{my_placeholder}` 为未设置状态。
+- 最后（如果没有匹配到任何条件）： `{my_placeholder}` 的默认值为 `unknown domain`，`{magic_number}` 的默认值为 `42`。
