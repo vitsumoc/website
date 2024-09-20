@@ -4,13 +4,15 @@ title: map (Caddyfile directive)
 
 # map
 
-Sets values of custom placeholders switched on an input value.
+基于输入的值设置自定义占位符的值。
 
-It compares the source value against the input side of the map, and for one that matches, it applies the output value(s) to each destination. Destinations become placeholder names. Default output values may also be specified for each destination.
+此指令将 source 值与输入侧进行比较，如果匹配成功，则将输出值应用于每个 destination。Destinations 部分都是占位符名称。还可以为每个 destination 指定默认输出值。
 
-Mapped placeholders are not evaluated until they are used, so even for very large mappings, this directive is quite efficient.
+如未被使用，被映射的占位符不会参与计算，因此即使映射表很大，此指令依然保持高效。
 
-## Syntax
+<h2 id="syntax">
+	语法
+</h2>
 
 ```caddy-d
 map [<matcher>] <source> <destinations...> {
@@ -19,26 +21,27 @@ map [<matcher>] <source> <destinations...> {
 }
 ```
 
-- **&lt;source&gt;** is the input value to switch on. Usually a placeholder.
+- **&lt;source&gt;** 用来进行匹配的输入值，通常使用一个占位符。
 
-- **&lt;destinations...&gt;** are the placeholders to create that hold the output values.
+- **&lt;destinations...&gt;** 将会被创建的，持有输出值的占位符。
 
-- **&lt;input&gt;** is the input value to match. If prefixed with `~`, it is treated as a regular expression.
+- **&lt;input&gt;** 和输入值进行匹配的值，如使用 `~` 前缀，则被视为正则表达式。
 
-- **&lt;outputs...&gt;** is one or more output values to store in the associated placeholder. The first output is written to the first destination, the second output to the second destination, etc.
+- **&lt;outputs...&gt;** 在关联的占位符中需要输出的一个或多个值。第一个位置的输出值输出到第一个 destination，第二个位置的输出值输出到第二个 destination，以此类推。
   
-  As a special case, the Caddyfile parser treats outputs that are a literal hyphen (`-`) as null/nil values. This is useful if you want to fall back to a default value for that particular output in the case of the given input, but want to use non-default values for other outputs.
+  作为一个特例，Caddyfile 将 outputs 中的连字符（`-`）视为 null/nil。当您想要为某些 output 设置默认值，而为其他 output 使用非默认值时，这个功能非常有用。
 
-  The outputs will be type converted if possible; `true` and `false` will be converted to boolean types, and numeric values will be converted to integer or float accordingly. To avoid this conversion, you may wrap the output with [quotes](/docs/caddyfile/concepts#tokens-and-quotes) and they will stay strings.
+  output 的值可能会进行类型转化，`true` 和 `false` 会被转化为 boolean 类型，数字值会被转化为整形或是浮点数。如果您不希望进行这种转化，您可以使用 [引号](/docs/caddyfile/concepts#tokens-and-quotes) 包裹 output 的值，这样他们就会保持为字符串格式。
 
-  The number of outputs for each mapping must not exceed the number of destinations; however, for convenience, there may be fewer outputs than destinations, and any missing outputs will be filled in implicitly.
-  
-  If a regular expression was used as the input, then the capture groups can be referenced with `${group}` where `group` is either the name or number of the capture group in the expression. Capture group `0` is the full regexp match, `1` is the first capture group, `2` is the second capture group, and so on.
+  output 的数量不得超过 destination 的数量，然而为了方便起见，可以少于 destination 的数量，这种情况下缺失的 output 会被隐式的填充。
 
-- **&lt;default&gt;** specifies the output values to store if no inputs are matched.
+  如果再 input 中使用了正则表达式，则可以使用 `${group}` 的形式引用捕获组，其中的 `group` 是捕获组的名称或是数字。捕获组 `0` 表示正则表达式的所有匹配，`1` 表示第一个捕获组，`2` 表示第二个捕获组，以此类推。
 
+- **&lt;default&gt;** 当没有任何 input 成功匹配时指定 output 的值。
 
-## Examples
+<h2 id="examples">
+	示例
+</h2>
 
 The following example demonstrates most aspects of this directive:
 
