@@ -62,8 +62,8 @@ title: Caddyfile 指令
 **[log_append](/docs/zh/caddyfile/directives/log_append)** | 在接入日志后追加字段
 **[log_skip](/docs/zh/caddyfile/directives/log_skip)** | 跳过匹配到请求的接入日志
 **[map](/docs/zh/caddyfile/directives/map)** | 将一个输入值映射到一个或多个输出
-**[method](/docs/caddyfile/directives/method)** | Change the HTTP method internally
-**[metrics](/docs/caddyfile/directives/metrics)** | Configures the Prometheus metrics exposition endpoint
+**[method](/docs/zh/caddyfile/directives/method)** | 修改 HTTP 请求方法
+**[metrics](/docs/zh/caddyfile/directives/metrics)** | 配置提供 Prometheus 指标的接口
 **[php_fastcgi](/docs/caddyfile/directives/php_fastcgi)** | Serve PHP sites over FastCGI
 **[push](/docs/caddyfile/directives/push)** | Push content to the client using HTTP/2 server push
 **[redir](/docs/caddyfile/directives/redir)** | Issues an HTTP redirect to the client
