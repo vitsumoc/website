@@ -92,13 +92,13 @@ Possible options are (click on each option to jump to its documentation):
 	}
 	acme_dns <provider> ...
 	on_demand_tls {
-		ask      <endpoint>
-		interval <duration>
-		burst    <n>
+		ask        <endpoint>
+		permission <module>
 	}
 	key_type ed25519|p256|p384|rsa2048|rsa4096
 	cert_issuer <name> ...
 	renew_interval <duration>
+	cert_lifetime  <duration>
 	ocsp_interval  <duration>
 	ocsp_stapling off
 	preferred_chains [smallest] {
@@ -122,6 +122,7 @@ Possible options are (click on each option to jump to its documentation):
 		trusted_proxies <module> ...
 		client_ip_headers <headers...>
 		metrics
+		trace
 		max_header_size <size>
 		enable_full_duplex
 		log_credentials
@@ -563,7 +564,9 @@ The ask endpoint should return _as fast as possible_, in a few milliseconds, ide
 
 </aside>
 
-- **interval** and **burst** allows `<n>` certificate operations within `<duration>` interval. These are deprecated and will be removed in a future version, due to not working as intended.
+- **permission** allows custom modules to be used to determine whether a certificate should be issued for a particular name. The module must implement the [`caddytls.OnDemandPermission` interface](https://pkg.go.dev/github.com/caddyserver/caddy/v2/modules/caddytls#OnDemandPermission). An `http` permission module is included, which is what the `ask` option uses, and remains as a shortcut for backwards compatibility.
+
+- ⚠️ **interval** and **burst** rate limiting options were available, but are NOT recommended. Remove them from your config if you still have them.
 
 ```caddy
 {
@@ -619,6 +622,22 @@ Default: `10m`
 ```caddy
 {
 	renew_interval 30m
+}
+```
+
+
+##### `cert_lifetime`
+The validity period to ask the CA to issue a certificate for. 
+
+This value is used to compute the `notAfter` field of the ACME order; therefore the system must have a reasonably synchronized clock. NOTE: Not all CAs support this. Check with your CA's ACME documentation to see if this is allowed and what values may be used. 
+
+Default: `0` (CA chooses lifetime, usually 90 days)
+
+⚠️ This is an experimental feature. Subject to change or removal.
+
+```caddy
+{
+	cert_lifetime 30d
 }
 ```
 
@@ -768,9 +787,13 @@ http:// {
 
 Allows configuring [listener wrappers](/docs/json/apps/http/servers/listener_wrappers/), which can modify the behaviour of the socket listener. They are applied in the given order.
 
-There is a special no-op [`tls`](/docs/json/apps/http/servers/listener_wrappers/tls/) listener wrapper provided as a standard module which marks where TLS should be handled in the chain of listener wrappers. It should only be used if another listener wrapper must be placed in front of the TLS handshake. This _does not_ enable TLS for a server; e.g. if this is used on your `:80` HTTP server, it will still act as a no-op.
+###### `tls`
 
-The included [`http_redirect`](/docs/json/apps/http/servers/listener_wrappers/http_redirect/) listener wrapper can look at the first few bytes of an incoming request to determine if it's likely HTTP (instead of TLS), and trigger an HTTP-to-HTTPS redirect on the same port but using the `https://` scheme. This is most useful when serving HTTPS on a non-standard port (other than `443`), since browsers will try HTTP unless the scheme is specified. Don't use this on an HTTP server. It must be placed _before_ the `tls` listener wrapper. For example:
+The `tls` listener wrapper is a no-op listener wrapper that marks where the TLS listener should be in a chain of listener wrappers. It should only be used if another listener wrapper must be placed in front of the TLS handshake.
+
+###### `http_redirect`
+
+The [`http_redirect`](/docs/json/apps/http/servers/listener_wrappers/http_redirect/) provides HTTP->HTTPS redirects for connections that come on the TLS port as an HTTP request, by detecting using the first few bytes that it's not a TLS handshake, but instead an HTTP request. This is most useful when serving HTTPS on a non-standard port (other than `443`), since browsers will try HTTP unless the scheme is specified. It must be placed _before_ the `tls` listener wrapper. Here's an example:
 
 ```caddy
 {
@@ -783,7 +806,34 @@ The included [`http_redirect`](/docs/json/apps/http/servers/listener_wrappers/ht
 }
 ```
 
-Also included is the [`proxy_protocol`](/docs/json/apps/http/servers/listener_wrappers/proxy_protocol/) listener wrapper (prior to v2.7.0 it was only available via a plugin), which enables [PROXY protocol](https://github.com/haproxy/haproxy/blob/master/doc/proxy-protocol.txt) parsing (popularized by HAProxy). This must be used _before_ the `tls` listener wrapper since it parses plaintext data at the start of the connection:
+###### `proxy_protocol`
+
+The [`proxy_protocol`](/docs/json/apps/http/servers/listener_wrappers/proxy_protocol/) listener wrapper (prior to v2.7.0 it was only available via a plugin) enables [PROXY protocol](https://github.com/haproxy/haproxy/blob/master/doc/proxy-protocol.txt) parsing (popularized by HAProxy). This must be used _before_ the `tls` listener wrapper since it parses plaintext data at the start of the connection:
+
+```caddy-d
+proxy_protocol {
+	timeout <duration>
+	allow <cidrs...>
+	deny <cidrs...>
+	fallback_policy <policy>
+}
+```
+
+- **timeout** specifies the maximum duration to wait for the PROXY header. Defaults to `5s`.
+
+- **allow** is a list of CIDR ranges of trusted sources to receive PROXY headers. Unix sockets are trusted by default and not part of this option.
+
+- **deny** is a list of CIDR ranges of trusted sources to reject PROXY headers from.
+
+- **fallback_policy** is the action to take if the PROXY header comes from an address that not in either list of allow/deny. The default fallback policy is `ignore`. Accepted values of `fallback_policy` are:
+	- `ignore`: address from PROXY header, but accept connection
+	- `use`: address from PROXY header
+	- `reject`: connection when PROXY header is sent
+	- `require`: connection to send PROXY header, reject if not present
+	- `skip`: accepts a connection without requiring the PROXY header.
+
+
+For example, for an HTTPS server (needing the `tls` listener wrapper) that accepts PROXY headers from a specific range of IP addresses, and rejects PROXY headers from a different range, with a timeout of 2 seconds:
 
 ```caddy
 {
@@ -792,6 +842,8 @@ Also included is the [`proxy_protocol`](/docs/json/apps/http/servers/listener_wr
 			proxy_protocol {
 				timeout 2s
 				allow 192.168.86.1/24 192.168.86.1/24
+				deny 10.0.0.0/8
+				fallback_policy reject
 			}
 			tls
 		}
@@ -920,6 +972,23 @@ Enables Prometheus metrics collection; necessary before scraping metrics. Note t
 ```
 
 
+##### `trace`
+
+Log each individual handler that is invoked. Requires that the log emit at `DEBUG` level ( You may do so with the [`debug` global option](#debug)).
+
+NOTE: This may log the configuration of your HTTP handler modules; do not enable this in insecure contexts when there is sensitive data in the configuration.
+
+⚠️ This is an experimental feature. Subject to change or removal.
+
+```caddy
+{
+	servers {
+		trace
+	}
+}
+```
+
+
 ##### `max_header_size`
 
 The maximum size to parse from a client's HTTP request headers. If the limit is exceeded, the server will respond with HTTP status `431 Request Header Fields Too Large`. It accepts all formats supported by [go-humanize](https://github.com/dustin/go-humanize/blob/master/bytes.go). By default, the limit is `1MB`.
@@ -956,7 +1025,7 @@ Test thoroughly with your HTTP clients, as some older clients may not support fu
 
 ##### `log_credentials`
 
-Since Caddy v2.5, by default, headers with potentially sensitive information (`Cookie`, `Set-Cookie`, `Authorization` and `Proxy-Authorization`) will be logged with empty values in access logs (see the [`log` directive](/docs/caddyfile/directives/log)).
+By default, access logs (enabled with the [`log` directive](/docs/caddyfile/directives/log)) with headers that contain potentially sensitive information (`Cookie`, `Set-Cookie`, `Authorization` and `Proxy-Authorization`) will be logged as `REDACTED`.
 
 If you wish to _not_ have these headers redacted, you may enable the `log_credentials` option.
 
